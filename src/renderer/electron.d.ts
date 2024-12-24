@@ -11,6 +11,16 @@ declare global {
         code: string,
         captchaKey: string) => Promise<any>;
       test_proxy:() => Promise<any>;
+      login_password: (
+        username: string,
+        password: string,
+        captcha: {
+          challenge: string;
+          seccode: string;
+          validate: string;
+          token: string;
+        }
+      ) => Promise<any>;  // 返回类型可以根据你的需求进一步调整
     };
 
     

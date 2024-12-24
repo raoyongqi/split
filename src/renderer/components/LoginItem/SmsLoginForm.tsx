@@ -1,14 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Input, Button, Tabs, Form, message, Select, Row } from "antd";
 import countryCallingCodes from '../../../common/constants/country-calling-codes';
-import {initializeCaptcha,loadCaptchaSettings} from '../../service/CaptchaService';
 import {validateFields,showMessage} from '../../service/ValidCheckservice';
 import {sendSmsLoginRequest,sendSmsRequest}  from '../../service/SmsService';
 
 
-interface SmsLoginFormProps {}
+interface SmsLoginFormProps {
+  getCaptchaResult: () => Promise<any>;
+}
 
-const SmsLoginForm: React.FC<SmsLoginFormProps> = ({}) => {
+
+const SmsLoginForm: React.FC<SmsLoginFormProps> = ({ getCaptchaResult }) => {
 
 
   const [isSendSmsButtonDisabled, setIsSendSmsButtonDisabled] = useState(false);
@@ -109,23 +111,6 @@ const SmsLoginForm: React.FC<SmsLoginFormProps> = ({}) => {
 
     // Re-enable the button after request completion
     setIsSendSmsButtonDisabled(false);
-  };
-
-
-  const getCaptchaResult = async (): Promise<any> => {
-    
-    try {
-
-      await loadCaptchaSettings(captchaRef);
-
-      return await initializeCaptcha(captchaRef);  
-
-    } catch (error) {
-
-      console.error(error);
-      
-      throw new Error('Captcha settings could not be loaded or captcha initialization failed.');
-    }
   };
   
 

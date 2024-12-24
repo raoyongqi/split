@@ -8,5 +8,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   sms: (cid: string, phoneNumber: string, captcha: GeetestCaptcha) => ipcRenderer.invoke('sms', cid, phoneNumber, captcha),
   test_proxy:() => ipcRenderer.invoke('test_proxy') , 
   login_sms:() => ipcRenderer.invoke('login_sms') , 
+  login_password:() => ipcRenderer.invoke('login_password') , 
+
+
 }, 
 );
