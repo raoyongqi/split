@@ -21,7 +21,7 @@ export function initBridge() {
     return response.data;
   });
 
-  ipcMain.handle('key', async () => {
+  ipcMain.handle('salt', async () => {
     try {
       const response = await fetch('https://passport.bilibili.com/x/passport-login/web/key');
       const data = await response.json();
@@ -46,9 +46,10 @@ export function initBridge() {
     return await TestProxy();
   });
 
-  
+
   ipcMain.handle('login_password', async (event, username: string, password: string, captcha: any) => {
-      return await loginWithPassword(username, password, captcha); // 将结果返回给渲染进程
+
+    return await loginWithPassword(username, password, captcha); // 将结果返回给渲染进程
 
   });
 };

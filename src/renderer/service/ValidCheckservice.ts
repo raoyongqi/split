@@ -4,7 +4,7 @@ import { Input, Button, Tabs, Form, message, Select, Row } from "antd";
 const validateFields = (values: any): string => {
     let errorMessage = '';
   
-    if (!values.cid) {
+    if (!values.cid.split(',')[0]) {
       errorMessage += 'CID 不能为空。';
     }
     if (!values.code) {
