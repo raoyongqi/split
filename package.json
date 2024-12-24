@@ -1,0 +1,56 @@
+{
+  "main": "./build/main/main.js",
+  "private": "true",
+  "scripts": {
+    "start": "npm-run-all --parallel start:renderer start:main:watch start:main",
+    "start:main": "cross-env NODE_ENV=development  electron .",
+    "start:main:watch": "tsc -p ./src/main/tsconfig.json ",
+    "start:renderer": "vite -c ./src/renderer/vite.config.js --host"
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.2",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "eslint": "^9.16.0",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "less": "^4.2.1",
+    "log4js": "^6.5.2",
+    "nodemon": "^3.1.7",
+    "@types/tough-cookie": "^4.0.2",
+
+    "vite": "^6.0.3"
+  },
+  "dependencies": {
+    "ahooks": "^3.4.1",
+    "axios-cookiejar-support": "^4.0.2",
+    "os-proxy-config": "^1.1.1",
+    "tough-cookie": "^4.0.0",
+    "electron-store": "^8.0.2",
+
+    "@ant-design/icons": "^5.5.2",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.2.1",
+    "@mui/material": "^6.2.1",
+    "@reduxjs/toolkit": "^2.5.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "antd": "^5.22.6",
+    "electron": "^33.2.1",
+    "electron-devtools-installer": "^3.1.1",
+    "log4js": "^6.9.1",
+    "NeteaseCloudMusicApi": "^4.25.0",
+    "npm-run-all": "^4.1.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^7.0.2",
+    "sanitize-filename": "^1.6.3",
+    "winston": "^3.17.0"
+  }
+}
