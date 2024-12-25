@@ -89,7 +89,7 @@ ipcMain.handle('get-search-video', async (event, keyword: string,page: number) =
 
 
 
-ipcMain.handle('save-search-json', async (event, data, keyword: string, pageString: string) => {
+ipcMain.handle('save-search-result', async (event, data, keyword: string, pageString: string) => {
   try {
     // 去掉不合法的字符，确保文件名安全
     const safeKeyword = keyword.replace(/[\\\/:*?"<>|]/g, '');
@@ -126,14 +126,14 @@ ipcMain.handle('save-search-json', async (event, data, keyword: string, pageStri
 });
 
 
-ipcMain.handle('save-search', (event, songs) => {
+ipcMain.handle('save-search', (event, search) => {
   // 直接指定文件保存路径
   const filePath = path.join(__dirname, '..', '..', 'common', 'search.txt'); // 设置保存路径
 
   const tempPath = `${filePath}.tmp`;
 
   // 保存文件
-  fs.writeFile(tempPath, songs, 'utf8', (err) => {
+  fs.writeFile(tempPath, search, 'utf8', (err) => {
     if (err) {
       logger.error('Failed to write to temp file:', err);
       return;
@@ -151,21 +151,27 @@ ipcMain.handle('save-search', (event, songs) => {
   });
 });
 
-ipcMain.handle('read-search', async () => {
 
+
+
+ipcMain.handle('read-search', async () => {
   const filePath = path.join(__dirname, '..', '..', 'common', 'search.txt');
 
-  return new Promise((resolve, reject) => {
-    fs.readFile(filePath, 'utf8', (err, data) => {
+  return new Promise<string[]>((resolve, reject) => {
+    fs.readFile(filePath, 'utf8', (err: NodeJS.ErrnoException | null, data: string) => {
       if (err) {
         reject(err);
       } else {
-        const lines = data.split('\n').map(line => line.trim()); // 分割每行并去除多余的空白
-        resolve(lines);
+        // Split by newline, trim each line, and filter out any empty lines
+        const lines = data
+          .split('\n') // Split the content into lines
+          .map(line => line.trim()) // Trim whitespace from each line
+          .filter(line => line.length > 0); // Remove empty lines
+
+        resolve(lines); // Resolve with the filtered lines
       }
     });
   });
-
 });
 
 };

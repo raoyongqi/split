@@ -27,7 +27,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   getSearchVideo: (keyword: string,page: number) => ipcRenderer.invoke('get-search-video', keyword,page),
 
-  saveSearchJson: (data: any[], keyword: string, page: string) => ipcRenderer.invoke('save-search-json',data, keyword,page),
+  saveSearchResult: (data: any[], keyword: string, page: string) => ipcRenderer.invoke('save-search-result',data, keyword,page),
   
   readSearch: () => ipcRenderer.invoke('read-search'),
   
