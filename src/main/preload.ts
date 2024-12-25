@@ -23,6 +23,16 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   downloadCookies: () => ipcRenderer.invoke('download-cookies'),
 
-  getPageInfo: (num: number) => ipcRenderer.invoke('get-page-info', num)
+  getPageInfo: (num: number) => ipcRenderer.invoke('get-page-info', num),
+
+  getSearchVideo: (keyword: string,page: number) => ipcRenderer.invoke('get-search-video', keyword,page),
+
+  saveSearchJson: (data: any[], keyword: string, page: string) => ipcRenderer.invoke('save-search-json',data, keyword,page),
+  
+  readSearch: () => ipcRenderer.invoke('read-search'),
+  
+  
+  saveSearch: (search: string) => ipcRenderer.invoke('save-search', search),
+
 }, 
 );

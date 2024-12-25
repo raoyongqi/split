@@ -27,6 +27,16 @@ declare global {
       getCookies: () => Promise<string>;
       downloadCookies: () => Promise<string>;
       getPageInfo: (num: number) => Promise<any>; // 返回类型为 Promise<any>，表示返回的是 JSON 数据
+
+      getSearchVideo: (keyword: string,page: number) => Promise<any>; // 返回类型为 Promise<any>，表示返回的是 JSON 数据
+
+
+      saveSearchResult: (data, keyword: string, pageString: string) => Promise<any>;
+
+      readSearch: () => Promise<any>;
+
+      saveSearch: (s: string) => void;
+
     };
 
   }

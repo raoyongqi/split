@@ -8,6 +8,7 @@ import {loginWithPassword,loginWithSmsCode,loginWithCookie} from '../common/logi
 import sendSms from '../common/send';
 
 import { useLogger } from '../common/logger';
+import os from 'os';
 
 import { TestProxy } from './test-proxy';
 
@@ -16,7 +17,7 @@ import path from 'path';
 import { dialog } from 'electron';
 
 
-import {getPageInfo} from '../common/info';
+import {getPageInfo,getSearchVideo} from '../common/info';
 
 const { logger } = useLogger('silly');
 
@@ -82,6 +83,90 @@ ipcMain.handle('get-page-info', async (event, num: number) => {
     return await getPageInfo(num);  // 返回数据给渲染进程
 });
 
+ipcMain.handle('get-search-video', async (event, keyword: string,page: number) => {
+  return await getSearchVideo(keyword,page);  // 返回数据给渲染进程
+});
+
+
+
+ipcMain.handle('save-search-json', async (event, data, keyword: string, pageString: string) => {
+  try {
+    // 去掉不合法的字符，确保文件名安全
+    const safeKeyword = keyword.replace(/[\\\/:*?"<>|]/g, '');
+
+    // 设置保存目录
+    const saveDir = path.join(os.homedir(), 'Music', 'bilibili', safeKeyword);
+
+    // 如果目录不存在，则创建它
+    if (!fs.existsSync(saveDir)) {
+      fs.mkdirSync(saveDir, { recursive: true });
+    }
+
+    // 设置保存的文件路径
+    const savePath = path.join(saveDir, `${pageString}.json`);
+
+    if (fs.existsSync(savePath)) {
+      return { success: false, error: '文件已经存在，跳过保存' };
+    }
+    // 将 data 转换为 JSON 格式
+    const jsonData = JSON.stringify(data, null, 2); // 格式化 JSON 数据（增加缩进）
+
+    // 将 JSON 数据保存到文件
+    fs.writeFileSync(savePath, jsonData, 'utf-8');
+
+    // 返回保存成功的路径
+    return { success: true, path: savePath };
+  } catch (error) {
+    console.error('保存数据失败:', error);
+    return { success: false, error: error };
+
+  }
+
+
+});
+
+
+ipcMain.handle('save-search', (event, songs) => {
+  // 直接指定文件保存路径
+  const filePath = path.join(__dirname, '..', '..', 'common', 'search.txt'); // 设置保存路径
+
+  const tempPath = `${filePath}.tmp`;
+
+  // 保存文件
+  fs.writeFile(tempPath, songs, 'utf8', (err) => {
+    if (err) {
+      logger.error('Failed to write to temp file:', err);
+      return;
+    }
+
+    fs.rename(tempPath, filePath, (err) => {
+      if (err) {
+        logger.error('Failed to replace the original file:', err);
+      } else {
+        logger.info(typeof filePath);
+
+        logger.info(filePath);
+      }
+    });
+  });
+});
+
+ipcMain.handle('read-search', async () => {
+
+  const filePath = path.join(__dirname, '..', '..', 'common', 'search.txt');
+
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        const lines = data.split('\n').map(line => line.trim()); // 分割每行并去除多余的空白
+        resolve(lines);
+      }
+    });
+  });
+
+});
 
 };
 

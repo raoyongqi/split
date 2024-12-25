@@ -4,6 +4,8 @@ import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Switch from "./components/Switch"
+import Search from "./components/Search";
+import Read from "./components/Read";
 
 const App: React.FC = () => {
   return (
@@ -17,6 +19,8 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/switch" element={<Switch />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/read" element={<Read />} />
 
         </Routes>
       </div>

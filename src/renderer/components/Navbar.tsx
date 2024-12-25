@@ -15,6 +15,15 @@ const Navbar: React.FC = () => {
         <li style={{ margin: "0 10px" }}>
           <Link to="/switch">Switch</Link>
         </li>
+        
+        <li style={{ margin: "0 10px" }}>
+          <Link to="/search">Search</Link>
+        </li>
+
+        <li style={{ margin: "0 10px" }}>
+          <Link to="/read">Read</Link>
+        </li>
+
       </ul>
     </nav>
   );
