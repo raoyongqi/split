@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import GeetestCaptcha from '../main/GeetestCaptcha';
 import configService from '../main/config-service';
 import { getAxiosInstance, cookieJar } from '../main/network';
-
+import getSelfInfo from './info';
 export const loginWithPassword = async (
   username: string,
   password: string,
@@ -112,7 +112,7 @@ export const loginWithPassword = async (
   }
 };
 
-export const loginWithSmsCodesendSms = async (
+export const loginWithSmsCode = async (
   cid: string,
   phoneNumber: string,
   code: string,
@@ -153,8 +153,7 @@ export const loginWithSmsCodesendSms = async (
       )
     ).data;
 
-    console.log('SMS 登录结果:', resp);
-
+    
     if (resp.code === 0) {
       // 登录成功，更新配置
       configService.fns.set(
@@ -171,3 +170,36 @@ export const loginWithSmsCodesendSms = async (
     throw error;
   }
 };
+
+
+
+// 封装登录逻辑
+export  async function loginWithCookie(cookieString: string): Promise<boolean> {
+  try {
+    // 解析 cookieString 并设置到 cookieJar 中
+    cookieString
+      .split(';')
+      .filter((cookie) => !!cookie.trim())
+      .forEach((cookie) =>
+        cookieJar.setCookieSync(
+          `${cookie}; Domain=.bilibili.com`,
+          'https://www.bilibili.com/'
+        )
+      );
+  } catch (err) {
+    console.error('Failed to set cookies:', err);
+    return false;
+  }
+  const resp = await getSelfInfo();
+
+  if (resp.code === 0) {
+    // 登录成功，更新配置
+    configService.fns.set(
+      'cookieString',
+      await cookieJar.getCookieString('https://www.bilibili.com/')
+    );
+  }
+
+  return resp.code === 0;
+  
+}

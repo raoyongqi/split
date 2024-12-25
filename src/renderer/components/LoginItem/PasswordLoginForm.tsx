@@ -121,7 +121,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ getCaptchaResult }) => {
           },
         ]}
       >
-        <Input type="password" />
+        <Input.Password type="password" />
       </Form.Item>
 
       <Button

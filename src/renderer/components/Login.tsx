@@ -10,7 +10,7 @@ const Login: React.FC = () => {
   
   const fetchSalt= async () => {
     try {
-      const data = await window.electronAPI.key(); // 调用主进程的 fetchData 函数
+      const data = await window.electronAPI.salt(); // 调用主进程的 fetchData 函数
       setResponse(data); // 设置响应数据
       console.log(data); // 打印响应数据到控制台
     } catch (error) {

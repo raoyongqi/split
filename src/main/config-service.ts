@@ -1,12 +1,6 @@
 import IService from './IService';
 import Store from 'electron-store';
-import {
-  AudioQuality,
-  VideoCodec,
-  VideoQuality,
-} from '../common/constants/media-info';
-import { app } from 'electron';
-import path from 'path';
+
 import Config from '../main/Config';
 
 let store: Store<any>;
@@ -57,6 +51,7 @@ const fns = {
   set: async (key: string, value: any) => getStore().set(key, value),
   // @ts-ignore 这样写可以获取到所有配置，故忽略 ts 错误。
   getAll: async () => getStore().get() as Promise<Config>,
+  get: async (key: string) =>  getStore().get(key),
   reset: async (...keys: string[]) => getStore().reset(...keys),
 };
 

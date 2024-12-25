@@ -21,9 +21,13 @@ declare global {
           token: string;
         }
       ) => Promise<any>;  // 返回类型可以根据你的需求进一步调整
+
+      login_cookies: (cookies: string) => Promise<any>; // 登录密码验证的接口
+
+      getCookies: () => Promise<string>;
+      downloadCookies: () => Promise<string>;
     };
 
-    
   }
   declare const initGeetest: (...args: any) => any;
 }
