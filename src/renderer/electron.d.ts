@@ -26,6 +26,7 @@ declare global {
 
       getCookies: () => Promise<string>;
       downloadCookies: () => Promise<string>;
+      getPageInfo: (num: number) => Promise<any>; // 返回类型为 Promise<any>，表示返回的是 JSON 数据
     };
 
   }

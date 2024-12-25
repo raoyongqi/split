@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import GeetestCaptcha from '../main/GeetestCaptcha';
 import configService from '../main/config-service';
 import { getAxiosInstance, cookieJar } from '../main/network';
-import getSelfInfo from './info';
+import {getSelfInfo} from './info';
 export const loginWithPassword = async (
   username: string,
   password: string,

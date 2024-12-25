@@ -22,5 +22,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getCookies: () => ipcRenderer.invoke('get-cookies'),
 
   downloadCookies: () => ipcRenderer.invoke('download-cookies'),
+
+  getPageInfo: (num: number) => ipcRenderer.invoke('get-page-info', num)
 }, 
 );

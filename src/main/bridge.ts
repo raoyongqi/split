@@ -14,6 +14,10 @@ import { TestProxy } from './test-proxy';
 import fs from 'fs';
 import path from 'path';
 import { dialog } from 'electron';
+
+
+import {getPageInfo} from '../common/info';
+
 const { logger } = useLogger('silly');
 
 export function initBridge() {
@@ -73,6 +77,12 @@ ipcMain.handle('download-cookies', async () => {
     return await downloadCookie(); // 返回保存的文件路径
  
 });
+
+ipcMain.handle('get-page-info', async (event, num: number) => {
+    return await getPageInfo(num);  // 返回数据给渲染进程
+});
+
+
 };
 
 
