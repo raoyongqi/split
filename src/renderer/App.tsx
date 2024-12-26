@@ -7,6 +7,8 @@ import Switch from "./components/Switch"
 import Search from "./components/Search";
 import Read from "./components/Read";
 import Video from "./components/Video";
+import Cid from "./components/Cid";
+import Play from "./components/Play";
 
 const App: React.FC = () => {
   return (
@@ -23,6 +25,8 @@ const App: React.FC = () => {
           <Route path="/search" element={<Search />} />
           <Route path="/read" element={<Read />} />
           <Route path="/video" element={<Video />} />
+          <Route path="/cid" element={<Cid />} />
+          <Route path="/play" element={<Play />} />
 
         </Routes>
       </div>

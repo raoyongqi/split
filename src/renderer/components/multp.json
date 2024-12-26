@@ -1,0 +1,408 @@
+[
+    {
+        "cid": 40359940,
+        "page": 1,
+        "from": "vupload",
+        "part": "01.第一章绪论",
+        "duration": 5244,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 640,
+            "height": 480,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40359942,
+        "page": 2,
+        "from": "vupload",
+        "part": "02.植物病害症状",
+        "duration": 5391,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 640,
+            "height": 480,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40360723,
+        "page": 3,
+        "from": "vupload",
+        "part": "03.实验一 植物病害类型",
+        "duration": 411,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 352,
+            "height": 288,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40361491,
+        "page": 4,
+        "from": "vupload",
+        "part": "04.实验二 植物病害症状",
+        "duration": 385,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 352,
+            "height": 288,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40361542,
+        "page": 5,
+        "from": "vupload",
+        "part": "05.实验三 真菌一般形态观察",
+        "duration": 481,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 352,
+            "height": 288,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40361610,
+        "page": 6,
+        "from": "vupload",
+        "part": "06.菌物的一般性状和分类",
+        "duration": 5391,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 640,
+            "height": 480,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40361660,
+        "page": 7,
+        "from": "vupload",
+        "part": "07.植物病原菌物（根肿菌门、卵菌门）",
+        "duration": 5167,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 640,
+            "height": 480,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40362334,
+        "page": 8,
+        "from": "vupload",
+        "part": "08.实验四 根肿菌和卵菌",
+        "duration": 490,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 352,
+            "height": 288,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40363047,
+        "page": 9,
+        "from": "vupload",
+        "part": "09.实验五 接合菌",
+        "duration": 355,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 352,
+            "height": 288,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40363116,
+        "page": 10,
+        "from": "vupload",
+        "part": "10.子囊菌门菌物",
+        "duration": 88,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 640,
+            "height": 480,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40363164,
+        "page": 11,
+        "from": "vupload",
+        "part": "11.实验六 子囊菌",
+        "duration": 343,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 352,
+            "height": 288,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40363178,
+        "page": 12,
+        "from": "vupload",
+        "part": "12.担子菌门菌物",
+        "duration": 5331,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 640,
+            "height": 480,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40363243,
+        "page": 13,
+        "from": "vupload",
+        "part": "13.实验七 担子菌",
+        "duration": 231,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 352,
+            "height": 288,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40363998,
+        "page": 14,
+        "from": "vupload",
+        "part": "14.半知菌类菌物",
+        "duration": 5409,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 640,
+            "height": 480,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40364026,
+        "page": 15,
+        "from": "vupload",
+        "part": "15.实验八 半知菌",
+        "duration": 434,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 352,
+            "height": 288,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40365266,
+        "page": 16,
+        "from": "vupload",
+        "part": "16.植物病原原核生物",
+        "duration": 5006,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 640,
+            "height": 480,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40365541,
+        "page": 17,
+        "from": "vupload",
+        "part": "17.实验九 原核生物",
+        "duration": 440,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 352,
+            "height": 288,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40366376,
+        "page": 18,
+        "from": "vupload",
+        "part": "18.植物病毒",
+        "duration": 4875,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 640,
+            "height": 480,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40366542,
+        "page": 19,
+        "from": "vupload",
+        "part": "19.实验十 植物病毒",
+        "duration": 645,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 352,
+            "height": 288,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40367609,
+        "page": 20,
+        "from": "vupload",
+        "part": "20.植物病原线虫",
+        "duration": 5326,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 640,
+            "height": 480,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40367727,
+        "page": 21,
+        "from": "vupload",
+        "part": "21.植物寄生线虫",
+        "duration": 272,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 352,
+            "height": 288,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40368736,
+        "page": 22,
+        "from": "vupload",
+        "part": "22.寄生性植物",
+        "duration": 5148,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 640,
+            "height": 480,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40368786,
+        "page": 23,
+        "from": "vupload",
+        "part": "23.实验十二 寄生性植物",
+        "duration": 205,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 352,
+            "height": 288,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40369704,
+        "page": 24,
+        "from": "vupload",
+        "part": "24.非侵染性病害",
+        "duration": 1712,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 640,
+            "height": 480,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40369728,
+        "page": 25,
+        "from": "vupload",
+        "part": "25.侵染过程",
+        "duration": 5272,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 640,
+            "height": 480,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40369983,
+        "page": 26,
+        "from": "vupload",
+        "part": "26.病害循环",
+        "duration": 5243,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 640,
+            "height": 480,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40370868,
+        "page": 27,
+        "from": "vupload",
+        "part": "27.植物病害流行与预测",
+        "duration": 3851,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 640,
+            "height": 480,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40371817,
+        "page": 28,
+        "from": "vupload",
+        "part": "28.植物病害防治",
+        "duration": 4600,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 640,
+            "height": 480,
+            "rotate": 0
+        }
+    },
+    {
+        "cid": 40372619,
+        "page": 29,
+        "from": "vupload",
+        "part": "29.实验十三 植物病害的防治",
+        "duration": 258,
+        "vid": "",
+        "weblink": "",
+        "dimension": {
+            "width": 352,
+            "height": 288,
+            "rotate": 0
+        }
+    }
+]

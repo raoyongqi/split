@@ -37,6 +37,14 @@ declare global {
 
       saveSearch: (s: string) => void;
 
+      getCidByAid: (s: number) => Promise<any>;
+
+      getCidByBvid: (s: string) => Promise<any>;
+
+
+      getPlayUrl: (s: string,qn:number,fnval:number) => Promise<any>;
+      downloadPlayUrl: (data,bvid: string,qnfnval:string) => Promise<any>;
+
     };
 
   }

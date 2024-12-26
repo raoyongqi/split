@@ -7,6 +7,8 @@ import {loginWithPassword,loginWithSmsCode,loginWithCookie} from '../common/logi
 import sendSms from '../common/send';
 
 import { useLogger } from '../common/logger';
+import { downloadPlayUrlJson } from '../common/download';
+
 import os from 'os';
 
 import { TestProxy } from './test-proxy';
@@ -16,9 +18,12 @@ import path from 'path';
 
 
 
-import {getPageInfo,getSearchVideo} from '../common/info';
+import {getPageInfo,getSearchVideo,getCidByAid,getCidByBvid,getPlayUrl} from '../common/info';
 
 const { logger } = useLogger('silly');
+
+
+
 import {getCookieString,downloadCookie } from'../common/cookie';
 
 
@@ -184,6 +189,31 @@ ipcMain.handle('fetch-download-link', async (event, url) => {
   } else {
     throw new Error('无效的 URL，请重新输入！');
   }
+});
+
+ipcMain.handle('aid-cid', async (event, aid: number) => {
+  return await getCidByAid(aid);
+});
+
+
+ipcMain.handle('bvid-cid', async (event, bvid:string) => {
+  
+  return await getCidByBvid(bvid);
+
+});
+
+
+ipcMain.handle('play-url', async (event, bvid:string,qn:number,fnval:number) => {
+  
+  return await getPlayUrl(bvid,qn,fnval);
+
+});
+
+
+ipcMain.handle('download-play-json', async (event, data:any,bvid:string,qnfnval:string) => {
+  
+  return await downloadPlayUrlJson(data,bvid,qnfnval);
+
 });
 
 

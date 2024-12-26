@@ -1,5 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import GeetestCaptcha from './GeetestCaptcha';
+import { getCidByAid } from 'src/common/info';
+import { downloadPlayUrlJson } from 'src/common/download';
 
 // Define the types for the parameters in fetchPlaylistTracks
 contextBridge.exposeInMainWorld('electronAPI', {
@@ -36,6 +38,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   downloadVideo: (url: string) => ipcRenderer.invoke('download-video', url),
 
+  getCidByAid: (aid: number) => ipcRenderer.invoke('aid-cid', aid),
+
+  getCidByBvid: (bvid: string) => ipcRenderer.invoke('bvid-cid', bvid),
   
+  getPlayUrl: (bvid: string,qn:number,fnval:number) => ipcRenderer.invoke('play-url', bvid,qn,fnval),
+
+  downloadPlayUrl: (data: any[],bvid: string,qnfnval: string) => ipcRenderer.invoke('download-play-json', data,bvid,qnfnval),
+
 }, 
 );

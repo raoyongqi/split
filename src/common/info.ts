@@ -5,6 +5,8 @@ import { URLSearchParams } from 'url';
 import configService from '../main/config-service';
 
 import {getWbiKeys,encWbi} from './wbi';
+import { useLogger } from '../common/logger';
+const { logger } = useLogger('silly');
 
 export async function getSelfInfo() {
   try {
@@ -114,26 +116,173 @@ export async function getSearchVideo(keyword: string,page: number,  ): Promise<a
   }
 }
 
-// Fetch the play URL from Bilibili API
-export async function getPlayUrl(cid: string,bvid: number) {
-  const baseUrl = 'https://api.bilibili.com/x/player/playurl';
+
+// Fetch the play URL from Bilibili API using axios
+
+
+// 一个获取up主全部视频的 https://app.bilibili.com/x/v2/space/archive/cursor?vmid=[这里填写用户的uid（填写的时候记得把外面的方括号去掉）]
+
+
+
+
+// Fetch the JSON response for a given AID from Bilibili API
+export async function getCidByAid(aid: number) {
+
+
+  const baseUrl = 'https://api.bilibili.com/x/player/pagelist';
+  
   const params = {
-    cid: cid,
-    bvid: bvid,
-    qn: 64,
-    fnval: 16,
-    try_look: 1,
-    voice_balance: 1
+    aid: aid,  // The AID (video ID) you want to query
+  };
+  const cookieString = await configService.fns.get('cookieString');
+
+  // Custom headers
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0',
+    'Cookie': cookieString,  // Replace with your actual cookie (SESSDATA and buvid3)
+    'referer': 'https://message.bilibili.com/',
   };
 
-  // Get the signed query parameters
-  const signedQuery = await getQuery(params);
+  try {
+    // Make the API request to get the pagelist with headers
+    const response = await axios.get(baseUrl, { params, headers });
 
-  // Build the final URL
-  const finalUrl = `${baseUrl}?${signedQuery}`;
-
-  // Make the API request and return the response data
-  const response = await fetch(finalUrl);
-  const responseData = await response.json();
-  return responseData;
+    // Return the entire JSON response
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching CID:', error);
+    throw error;
+  }
 }
+
+
+// Fetch the JSON response for a given AID from Bilibili API
+export async function getCidByBvid(bvid: string) {
+  const baseUrl = 'https://api.bilibili.com/x/player/pagelist';
+
+  const params = {
+    bvid: bvid,  // The BVID (video ID) you want to query
+  };
+
+  // 获取 cookie 字符串
+  const cookieString = await configService.fns.get('cookieString');
+
+  // Custom headers
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0',
+    'Cookie': cookieString,  // Replace with your actual cookie (SESSDATA and buvid3)
+    'referer': 'https://message.bilibili.com/',
+  };
+
+  try {
+    // Make the API request to get the pagelist with headers
+    const response = await axios.get(baseUrl, { params, headers });
+
+    // Get the video data from the response
+    const videoData = response.data.data;
+
+    // Check if videoData is an array and has content
+    if (Array.isArray(videoData) && videoData.length > 0) {
+      if (videoData.length === 1 && videoData[0].page === 1) {
+        // Single page video, return an array with the CID of that page
+        return [videoData[0].cid];
+      } else {
+        // Multi-page video, return an array with the CID of each page
+        return videoData.map((page: any) => page.cid);
+      }
+    }
+
+    // If video data is not in the expected format
+    throw new Error('Invalid video data format');
+  } catch (error) {
+    console.error('Error fetching CID:', error);
+    throw error;
+  }
+}
+
+
+
+// 获取播放链接的函数
+export async function getPlayUrl(bvid: string,qn: number = 16, fnval: number = 16,) {
+
+
+  const baseUrl = 'https://api.bilibili.com/x/player/playurl';
+  const cookieString = await configService.fns.get('cookieString');
+
+  // 设置自定义请求头
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0',
+    'Cookie': cookieString, // 传入 cookie 字符串
+    referer: 'https://message.bilibili.com/',
+  };
+
+  // 构建请求每个 CID 的 URL
+  const getCidUrl = async (cid: number) => {
+    const params = {
+      cid: cid,
+      bvid: bvid,
+      qn: qn,
+      fnval: fnval, // 使用传入的 fnval 或默认值
+    };
+
+    // 获取签名后的查询参数
+    const signedQuery = await getQuery(params);
+
+    // 构建最终的请求 URL
+    const finalUrl = `${baseUrl}?${signedQuery}`;
+
+    // 请求并返回结果
+    try {
+      const response = await axios.get(finalUrl, { headers });
+
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching play URL for CID ${cid}:`, error);
+      return null; // 如果请求失败，返回 null
+    }
+  };
+
+  // 并行请求所有 CID 的播放链接
+  try {
+    const cidList = await getCidByBvid(bvid);
+
+
+    // 如果有多个 CID，使用 Promise.all
+    const playUrls = await Promise.all(
+      
+      cidList.map(async (cid) => {
+
+        const result = await getCidUrl(cid);
+        
+        logger.info(`Play URL result for CID ${cid}:`, result); // 调试用日志
+        
+        return result;
+      
+      })
+    );
+
+
+    // 过滤掉失败的请求结果（null）
+    
+    
+    return playUrls.filter(url => url !== null);
+  
+  
+  } catch (error) {
+    
+    console.error('Error fetching play URLs:', error);
+
+    throw error;
+  }
+}
+
+// 一个典型的多p视频
+//BV1sp411d7ND 植物病理学——南京农业大学 1300:4
+
+// 单p视频1
+// BV1Aq4y1o7p2
+
+
+
+
+

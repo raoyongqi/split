@@ -1,6 +1,22 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Alert, Spin } from "antd";
 
+// 模拟接口
+const mockFetchDownloadLink = async (videoId: string) => {
+  // 模拟 API 调用延迟
+  return new Promise<string>((resolve, reject) => {
+    setTimeout(() => {
+      if (videoId === "2") {
+
+        console.log(videoId)
+        resolve(`https://example.com/download/${videoId}`);
+      } else {
+        reject(new Error("无效的视频 ID，请重新输入！"));
+      }
+    }, 1000); // 模拟 1 秒延迟
+  });
+};
+
 const Video: React.FC = () => {
   const [videoId, setVideoId] = useState<string>(""); // 存储输入的 Video ID
   const [downloadLink, setDownloadLink] = useState<string | null>(null); // 存储生成的下载链接
@@ -14,7 +30,8 @@ const Video: React.FC = () => {
     setDownloadLink(null);
 
     try {
-      const link = await ipcRenderer.invoke('get-download-link', videoId); // 调用主进程方法
+    console.log(videoId)
+      const link = await mockFetchDownloadLink(videoId);
       setDownloadLink(link);
     } catch (error: any) {
       setErrorMessage(error.message);
