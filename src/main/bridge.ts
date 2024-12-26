@@ -2,7 +2,6 @@ import { ipcMain } from 'electron';
 
 import axios from 'axios';
 
-import configService from '../main/config-service';
 import {loginWithPassword,loginWithSmsCode,loginWithCookie} from '../common/login';
 
 import sendSms from '../common/send';
@@ -14,12 +13,14 @@ import { TestProxy } from './test-proxy';
 
 import fs from 'fs';
 import path from 'path';
-import { dialog } from 'electron';
+
 
 
 import {getPageInfo,getSearchVideo} from '../common/info';
 
 const { logger } = useLogger('silly');
+import {getCookieString,downloadCookie } from'../common/cookie';
+
 
 export function initBridge() {
 
@@ -174,49 +175,17 @@ ipcMain.handle('read-search', async () => {
   });
 });
 
+
+
+ipcMain.handle('fetch-download-link', async (event, url) => {
+  // 模拟处理逻辑
+  if (url.startsWith('https://example.com/')) {
+    return `${url}/download-link`; // 模拟返回下载链接
+  } else {
+    throw new Error('无效的 URL，请重新输入！');
+  }
+});
+
+
 };
 
-
-// 在主进程中封装获取cookieString的函数
-async function getCookieString() {
-  try {
-    const cookieString = await configService.fns.get('cookieString');
-    console.log('Latest cookieString:', cookieString);
-    return cookieString; // 返回cookie字符串
-  } catch (error) {
-    console.error('Failed to get cookieString:', error);
-    throw error; // 将错误抛出
-  }
-}
-
-
-// 获取 cookieString 并保存到文件
-async function downloadCookie() {
-  try {
-    // 获取最新的 cookieString
-    const cookieString = await configService.fns.get('cookieString');
-    console.log('Latest cookieString:', cookieString);
-
-    // 打开文件保存对话框，允许用户选择保存位置
-    const result = await dialog.showSaveDialog({
-      title: 'Save Cookie File',
-      defaultPath: path.join(__dirname, 'cookie.txt'),
-      filters: [{ name: 'Text Files', extensions: ['txt'] }]
-    });
-
-    if (result.canceled) {
-      console.log('User canceled the save operation');
-      return;
-    }
-
-    const filePath = result.filePath;
-    // 保存 cookieString 到选定的文件路径
-    fs.writeFileSync(filePath, cookieString, 'utf8');
-    console.log('Cookie saved to:', filePath);
-
-    return filePath; // 返回文件路径
-  } catch (error) {
-    console.error('Failed to download cookie file:', error);
-    throw error; // 抛出错误
-  }
-}

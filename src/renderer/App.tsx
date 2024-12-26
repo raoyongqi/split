@@ -6,6 +6,7 @@ import Login from "./components/Login";
 import Switch from "./components/Switch"
 import Search from "./components/Search";
 import Read from "./components/Read";
+import Video from "./components/Video";
 
 const App: React.FC = () => {
   return (
@@ -21,6 +22,7 @@ const App: React.FC = () => {
           <Route path="/switch" element={<Switch />} />
           <Route path="/search" element={<Search />} />
           <Route path="/read" element={<Read />} />
+          <Route path="/video" element={<Video />} />
 
         </Routes>
       </div>

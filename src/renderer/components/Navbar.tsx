@@ -24,6 +24,10 @@ const Navbar: React.FC = () => {
           <Link to="/read">Read</Link>
         </li>
 
+        <li style={{ margin: "0 10px" }}>
+          <Link to="/video">Video</Link>
+        </li>
+
       </ul>
     </nav>
   );

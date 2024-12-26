@@ -113,3 +113,27 @@ export async function getSearchVideo(keyword: string,page: number,  ): Promise<a
     throw error; // 重新抛出错误以便调用方处理
   }
 }
+
+// Fetch the play URL from Bilibili API
+export async function getPlayUrl(cid: string,bvid: number) {
+  const baseUrl = 'https://api.bilibili.com/x/player/playurl';
+  const params = {
+    cid: cid,
+    bvid: bvid,
+    qn: 64,
+    fnval: 16,
+    try_look: 1,
+    voice_balance: 1
+  };
+
+  // Get the signed query parameters
+  const signedQuery = await getQuery(params);
+
+  // Build the final URL
+  const finalUrl = `${baseUrl}?${signedQuery}`;
+
+  // Make the API request and return the response data
+  const response = await fetch(finalUrl);
+  const responseData = await response.json();
+  return responseData;
+}

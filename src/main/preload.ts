@@ -34,5 +34,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   
   saveSearch: (search: string) => ipcRenderer.invoke('save-search', search),
 
+  downloadVideo: (url: string) => ipcRenderer.invoke('download-video', url),
+
+  
 }, 
 );
