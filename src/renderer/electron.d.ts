@@ -44,6 +44,7 @@ declare global {
 
       getPlayUrl: (s: string,qn:number,fnval:number) => Promise<any>;
       downloadPlayUrl: (data,bvid: string,qnfnval:string) => Promise<any>;
+      addUriToAria2: (url: string) => Promise<any>;
 
     };
 

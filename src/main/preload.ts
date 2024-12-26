@@ -45,6 +45,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getPlayUrl: (bvid: string,qn:number,fnval:number) => ipcRenderer.invoke('play-url', bvid,qn,fnval),
 
   downloadPlayUrl: (data: any[],bvid: string,qnfnval: string) => ipcRenderer.invoke('download-play-json', data,bvid,qnfnval),
+  
+  addUriToAria2: (uri: string) => ipcRenderer.invoke('aria2.addUri', uri),
 
 }, 
 );

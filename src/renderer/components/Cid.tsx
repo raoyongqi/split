@@ -34,14 +34,16 @@ const Cid: React.FC = () => {
             console.log(videoData[0].cid);
 
         } else if (videoData.length > 1) {
+            
             console.log('This is a multi-page video');
+
           } else {
             console.log('This is an unrecognized video format');
           }
         } else {
           console.log('No video data found');
         }
-        
+
       // 如果是单p视频，返回这个
       const firstCid = response.data.cid // 假设返回的第一个结果包含 CID
 

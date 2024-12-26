@@ -16,6 +16,7 @@ import { TestProxy } from './test-proxy';
 import fs from 'fs';
 import path from 'path';
 
+import aria2Service from './service/aria2';
 
 
 import {getPageInfo,getSearchVideo,getCidByAid,getCidByBvid,getPlayUrl} from '../common/info';
@@ -214,6 +215,38 @@ ipcMain.handle('download-play-json', async (event, data:any,bvid:string,qnfnval:
   
   return await downloadPlayUrlJson(data,bvid,qnfnval);
 
+});
+
+
+//
+ipcMain.handle('aria2.addUri', async (_, uri: string) => {
+  try {
+    const downloadDir = 'C:\\Users\\r\\Music\\bilibiliM4s';  // 指定下载目录
+
+    // 检查目录是否存在，如果不存在则创建
+    if (!fs.existsSync(downloadDir)) {
+      fs.mkdirSync(downloadDir, { recursive: true });
+    }
+
+    // 创建请求头
+    const headers = [
+      'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
+      'Referer: https://space.bilibili.com',
+      
+    ];
+
+    // 调用 aria2Service 中的 'addUri' 方法，传递参数
+    const result = await aria2Service.fns.invoke('aria2.addUri', [uri], {
+      dir: downloadDir,    // 设置下载目录
+      header: headers,  
+      out: 'fileName',       // 设置固定的下载文件名 // 设置 HTTP 请求头
+    });
+
+    return result;
+  } catch (error) {
+    console.error('Error in aria2.addUri:', error);
+    throw error;  // 将错误抛给渲染进程
+  }
 });
 
 

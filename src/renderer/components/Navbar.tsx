@@ -28,16 +28,19 @@ const Navbar: React.FC = () => {
           <Link to="/video">Video</Link>
         </li>
         
-        <li style={{ margin: "0 10px" }}>
+        {/* <li style={{ margin: "0 10px" }}>
           <Link to="/cid">Cid</Link>
-        </li>
+        </li> */}
 
         
         <li style={{ margin: "0 10px" }}>
           <Link to="/play">Play</Link>
         </li>
 
-        
+        <li style={{ margin: "0 10px" }}>
+          <Link to="/ara">Ara</Link>
+        </li>
+
       </ul>
     </nav>
   );
