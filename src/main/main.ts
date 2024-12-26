@@ -1,6 +1,7 @@
 import { app, BrowserWindow ,dialog} from 'electron';
 import * as path from 'path';
 import process from 'process';
+import { initAria2cRpc } from './service/aria2';
 
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
@@ -10,7 +11,7 @@ import { initBridge } from './bridge';
 import { configureLog4js, reportCrash } from './log';
 async function main() {
   await app.whenReady();
-  initBridge();
+
   const  win = new BrowserWindow({
     width: 800,
     height: 600,
@@ -36,6 +37,9 @@ if (app.requestSingleInstanceLock()) {
     app.quit();
     return;
   }
+  initBridge();
+
+  await initAria2cRpc();
 
   win.once('ready-to-show', () => win.show());
 

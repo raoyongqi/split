@@ -23,6 +23,7 @@ export async function getSelfInfo() {
 
 // Function to get the signed query
 async function getQuery(parameters: Record<string, string | number>): Promise<string> {
+  
   const wbiKeys = await getWbiKeys();
 
   // 类型保护：如果 wbiKeys 为 null，则抛出错误

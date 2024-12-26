@@ -94,7 +94,7 @@ const SearchList: React.FC = () => {
           continue;
         }
         
-        for (let page = 1; page <= 100; page++) {
+        for (let page = 1; page <= 50; page++) {
           await handleSearch(result, page); // Assuming only one page is handled per result
         
         }

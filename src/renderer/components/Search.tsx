@@ -4,7 +4,6 @@ import { message } from 'antd'; // 从 Ant Design 导入 message
 
 const Search: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   // 搜索视频的方法
   const handleSearch = async (keyword: string, page: number) => {
@@ -14,27 +13,30 @@ const Search: React.FC = () => {
     }
 
     setLoading(true);
-    setError(null);
 
     try {
-      const data = await window.electronAPI.getSearchVideo(keyword, page);
+      const data = await window.electronAPI.getSearchVideo(keyword, page); // 确保函数名正确
 
-      // 在数据抓取完成后，直接保存数据
-      await saveData(data, keyword, page); 
-
+      // 在数据抓取完成后，保存数据
+      await saveData(data, keyword, page);
+      console.log(data)
       message.success(`视频搜索完成，第 ${page} 页`);
     } catch (err) {
-      setError('获取视频数据失败');
       message.error('获取视频数据失败');
     } finally {
       setLoading(false);
     }
   };
+  // 获取AI摘要 https://api.bilibili.com/x/web-interface/view/conclusion/get
 
+  // 获取音频 https://api.bilibili.com/x/player/wbi/playurl 
+  // 
+  // 
+  // 'child_process'
   // 保存数据到本地的方法
   const saveData = async (data: any, keyword: string, page: number) => {
     try {
-      const pageString = `${keyword}_ ${page}`; 
+      const pageString = `${keyword}_${page}`; // 修正字符串模板拼接
 
       const result = await window.electronAPI.saveSearchResult(data, keyword, pageString);
       if (result.success) {
@@ -47,45 +49,17 @@ const Search: React.FC = () => {
     }
   };
 
-  // 循环调用 handleSearch 保存前100页的结果
-  const handleBulkSearch = async () => {
-    const keyword = 'your_search_keyword'; // 替换为实际的搜索关键字
-
-    if (!keyword) {
-      message.error('请输入搜索关键字');
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      for (let page = 1; page <= 100; page++) {
-        await handleSearch(keyword, page);
-      }
-
-      message.success('所有数据已成功保存');
-    } catch (err) {
-      setError('获取视频数据失败');
-      message.error('批量搜索失败');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div>
-      <Button 
-        variant="contained" 
-        color="primary" 
-        onClick={handleBulkSearch} 
-        disabled={loading} 
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => handleSearch('短发', 1)} // 添加测试的参数，确保函数可以被调用
+        disabled={loading}
         style={{ marginTop: 20 }}
       >
-        批量保存前100页
+        {loading ? '加载中...' : '搜索视频'}
       </Button>
-
-      {error && <p style={{ color: 'red', marginTop: 20 }}>{error}</p>}
     </div>
   );
 };
