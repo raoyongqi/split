@@ -58,6 +58,8 @@ export async function downloadPlayUrlJson(data: any, bvid: string, cid: number, 
 
 export async function downloadPlayUrlM4s(data: any, bvid: string, cid: number, qnfnval: string) {
   try {
+
+
     // 提取 audio_data 和 baseUrls
     const audioData = data.data.dash.audio;  // 获取 audio 数据
     const baseUrls = audioData.map((item: { baseUrl: string }) => item.baseUrl);  // 提取 baseUrl
@@ -153,6 +155,8 @@ const checkStatus = async (gid: string) => {
 // 获取视频的详细信息https://api.bilibili.com/x/web-interface/view
 
 export async function saveVideoDetails(bvid: string, videoDetails: any) {
+
+
   const baseSaveDir = path.join(os.homedir(), 'Music', 'bilibiliURL', bvid);
 
   // 获取当前时间戳，作为文件名的一部分
@@ -165,5 +169,7 @@ export async function saveVideoDetails(bvid: string, videoDetails: any) {
 
   // 将视频详情保存为 JSON 文件
   fs.writeFileSync(filePath, JSON.stringify(videoDetails, null, 2), 'utf8');
+
+  
   console.log('Video details saved to:', filePath);
 }

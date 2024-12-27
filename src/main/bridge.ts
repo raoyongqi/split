@@ -259,5 +259,54 @@ ipcMain.handle('get-video-details', async (event, bvid) => {
     throw new Error('Failed to fetch video details');
   }
 });
+
+ipcMain.handle('read-bv', async (event, bvid) => {
+
+
+  const filePath = path.join(__dirname, '..', '..', 'common', 'bvids.txt');
+
+  return new Promise<string[]>((resolve, reject) => {
+    fs.readFile(filePath, 'utf8', (err: NodeJS.ErrnoException | null, data: string) => {
+      if (err) {
+        reject(err);
+      } else {
+        // Split by newline, trim each line, and filter out any empty lines
+        const lines = data
+          .split('\n') // Split the content into lines
+          .map(line => line.trim()) // Trim whitespace from each line
+          .filter(line => line.length > 0); // Remove empty lines
+
+        resolve(lines); // Resolve with the filtered lines
+      }
+    });
+  });
+});
+
+
+ipcMain.handle('save-bv', async (event, bvid) => {
+  const filePath = path.join(__dirname, '..', '..', 'common', 'bvids.txt'); // 设置保存路径
+
+  const tempPath = `${filePath}.tmp`;
+
+  // 保存文件
+  fs.writeFile(tempPath, bvid, 'utf8', (err) => {
+    if (err) {
+      logger.error('Failed to write to temp file:', err);
+      return;
+    }
+
+    fs.rename(tempPath, filePath, (err) => {
+      if (err) {
+        logger.error('Failed to replace the original file:', err);
+      } else {
+        logger.info(typeof filePath);
+
+        logger.info(filePath);
+      }
+    });
+  });
+});
+
+
 };
 

@@ -3,7 +3,9 @@ import axios from 'axios';
 import { URLSearchParams } from 'url';
 
 import configService from '../main/config-service';
-
+import path from 'path';
+import fs from 'fs';
+import os from 'os';
 import {getWbiKeys,encWbi} from './wbi';
 import { useLogger } from '../common/logger';
 
@@ -297,7 +299,10 @@ export async function getPlayUrl(bvid: string,qn: number = 16, fnval: number = 1
 }
 
 // 一个典型的多p视频
-//BV1sp411d7ND 植物病理学——南京农业大学 1300:4
+
+// 这个不那么大
+
+// BV1js411t7mq
 
 // 单p视频1
 // BV1Aq4y1o7p2
@@ -334,8 +339,11 @@ export async function getVideoPlayUrl(bvid: string): Promise<any> {
 
     // 返回响应数据
     return response.data;
+  
   } catch (error) {
+    
     console.error('Error fetching video play URL:', error);
+    
     throw error; // 重新抛出错误以便调用方处理
   }
 }
@@ -378,6 +386,13 @@ export async function getPlayUrlSig(bvid: string, qn: number = 16, fnval: number
     }
   };
 
+  const saveDir = path.join(os.homedir(), 'Music', 'bilibiliURL', bvid);
+
+  // 判断路径是否存在，如果存在抛出错误
+  if (fs.existsSync(saveDir)) {
+    throw new Error(`目录 ${saveDir} 已存在，避免重复下载。`);
+  }
+
   try {
     // 获取视频详情
     const videoDetails = await getVideoDetails(bvid);
@@ -386,19 +401,23 @@ export async function getPlayUrlSig(bvid: string, qn: number = 16, fnval: number
     await saveVideoDetails(bvid, videoDetails);
 
     if (videoDetails.pages.length === 1) {
+      
       const cid = videoDetails.pages[0].cid;
-      console.log('这是单p视频');
+      
+      logger.info(`这是单p视频`);
 
       const result = await getCidUrl(cid);
       const qnfnval = `${qn}_${fnval}`;
       
       await downloadPlayUrlJson(result, bvid, cid, qnfnval);
+      
       await downloadPlayUrlM4s(result, bvid, cid, qnfnval);
 
       return result; // 返回单P视频的结果
 
     } else {
-      console.log('这是多p视频');
+      
+      logger.info(`这是多p视频${videoDetails.pages.length}`);
 
       const multiPageResults = [];
 

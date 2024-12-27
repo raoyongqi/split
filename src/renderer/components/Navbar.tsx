@@ -43,6 +43,10 @@ const Navbar: React.FC = () => {
         <li style={{ margin: "0 10px" }}>
           <Link to="/details">Details</Link>
         </li>
+
+        <li style={{ margin: "0 10px" }}>
+          <Link to="/bv">Bv</Link>
+        </li>
       </ul>
     </nav>
   );

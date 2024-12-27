@@ -1,11 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";  // 从 Redux Toolkit 导入 configureStore，用于简化 Redux store 的配置过程
 import searchReducer from './search-slice'  // 导入 songsSlice 的 reducer，它处理关于习惯（songs）状态的更新逻辑
+import bvReducer from './bv-slice'  // 导入 songsSlice 的 reducer，它处理关于习惯（songs）状态的更新逻辑
 
 
 // 配置 Redux store
 const store =  configureStore({
     reducer: {
         search: searchReducer,
+        bv: bvReducer,
+
     },
 })
 

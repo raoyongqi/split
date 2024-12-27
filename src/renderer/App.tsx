@@ -12,6 +12,7 @@ import Play from "./components/Play";
 import Ara from "./components/Ara";
 import Details from "./components/Details";
 
+import Bv from "./components/Bv";
 
 const App: React.FC = () => {
   return (
@@ -26,12 +27,15 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/switch" element={<Switch />} />
           <Route path="/search" element={<Search />} />
-          <Route path="/read" element={<Read />} />
+          {/* <Route path="/read" element={<Read />} /> */}
           <Route path="/video" element={<Video />} />
           {/* <Route path="/cid" element={<Cid />} /> */}
           <Route path="/play" element={<Play />} />
           <Route path="/ara" element={<Ara />} />
           <Route path="/details" element={<Details />} />
+
+          <Route path="/bv" element={<Bv />} />
+
         </Routes>
       </div>
     </Router>

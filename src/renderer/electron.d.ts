@@ -34,8 +34,15 @@ declare global {
       saveSearchResult: (data, keyword: string, pageString: string) => Promise<any>;
 
       readSearch: () => Promise<any>;
+      
+      
+      getBvVideo: (s: string) => Promise<any>;
+      
+      readBv: () => Promise<any>;
 
       saveSearch: (s: string) => void;
+      
+      saveBv: (s: string) => void;
 
       getCidByAid: (s: number) => Promise<any>;
 

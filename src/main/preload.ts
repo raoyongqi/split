@@ -49,5 +49,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   addUriToAria2: (uri: string) => ipcRenderer.invoke('aria2.addUri', uri),
 
   getBVDetails: (uri: string) => ipcRenderer.invoke('get-video-details', uri),
+
+  readBv: () => ipcRenderer.invoke('read-bv'),
+  
+  saveBv: (bv: string) => ipcRenderer.invoke('save-bv', bv),
+
 }, 
 );
