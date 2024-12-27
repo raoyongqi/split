@@ -19,7 +19,7 @@ import path from 'path';
 import aria2Service from './service/aria2';
 
 
-import {getPageInfo,getSearchVideo,getCidByAid,getCidByBvid,getPlayUrl} from '../common/info';
+import {getPageInfo,getSearchVideo,getCidByAid,getCidByBvid,getVideoDetails,getPlayUrlSig} from '../common/info';
 
 const { logger } = useLogger('silly');
 
@@ -206,7 +206,7 @@ ipcMain.handle('bvid-cid', async (event, bvid:string) => {
 
 ipcMain.handle('play-url', async (event, bvid:string,qn:number,fnval:number) => {
   
-  return await getPlayUrl(bvid,qn,fnval);
+  return await getPlayUrlSig(bvid,qn,fnval);
 
 });
 
@@ -249,6 +249,15 @@ ipcMain.handle('aria2.addUri', async (_, uri: string) => {
   }
 });
 
-
+ipcMain.handle('get-video-details', async (event, bvid) => {
+  try {
+    // 调用 getVideoDetails 函数并返回数据
+    const videoDetails = await getVideoDetails(bvid);
+    return videoDetails;  // 返回结果
+  } catch (error) {
+    console.error('Error in main process:', error);
+    throw new Error('Failed to fetch video details');
+  }
+});
 };
 

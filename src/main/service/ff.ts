@@ -10,11 +10,12 @@ import {getBinPath} from '../util';
 
 
 // 合并 m4s 文件并删除原文件的函数
-export async function mergeM4sToM4a(data: any, bvid: string,cid: number, qnfnval: string) {
- 
+import { spawn } from 'child_process';
 
-  
-  const baseSaveDir = path.join(os.homedir(), 'Music', 'bilibiliURL', `${bvid}_${qnfnval}`);
+// 合并 m4s 文件并删除原文件的函数
+export async function mergeM4sToM4a(data: any, bvid: string, cid: number, qnfnval: string) {
+
+  const baseSaveDir = path.join(os.homedir(), 'Music', 'bilibiliURL', `${bvid}`, `${bvid}_${qnfnval}`);
   const saveDir = path.join(baseSaveDir, `${cid}`);
   // 确保目标文件夹存在
   if (!fs.existsSync(saveDir)) {
@@ -32,7 +33,6 @@ export async function mergeM4sToM4a(data: any, bvid: string,cid: number, qnfnval
     return { error: '文件不存在', details: `没有找到 ${bvid} ${cid} 对应的 .m4s 文件。` };
   }
 
-
   // 输出文件路径 (合并后的 .m4a 文件)
   const outputFileName = `${bvid}_${cid}.m4a`;
   const outputPath = path.join(saveDir, outputFileName);
@@ -43,22 +43,34 @@ export async function mergeM4sToM4a(data: any, bvid: string,cid: number, qnfnval
 
     // 拼接命令使用 concat 协议
     const concatFiles = m4sFiles.join('|');  // 使用管道符连接文件路径
-    const command = `"${ffmpegPath}" -i "concat:${concatFiles}" -c:a aac -strict experimental "${outputPath}"`;
+    const commandArgs = ['-i', `concat:${concatFiles}`, '-c:a', 'aac', '-strict', 'experimental', outputPath];
     
-    logger.info(`Running ffmpeg command: ${command}`);
+    logger.info(`Running ffmpeg command: "${ffmpegPath}" ${commandArgs.join(' ')}`);
 
-    // 使用 child_process 执行 ffmpeg 命令
+    // 使用 child_process spawn 执行 ffmpeg 命令
+    const ffmpegProcess = spawn(ffmpegPath, commandArgs);
+
+    // 监听标准输出和标准错误输出
+    ffmpegProcess.stdout.on('data', (data) => {
+      logger.info(`ffmpeg stdout: ${data.toString('utf-8')}`);
+    });
+
+    ffmpegProcess.stderr.on('data', (data) => {
+      logger.error(`ffmpeg stderr: ${data.toString('utf-8')}`);
+    });
+
+    // 等待进程结束
     const result = await new Promise<any>((resolve, reject) => {
-      exec(command, (error, stdout, stderr) => {
-        if (error) {
-          logger.error('ffmpeg error:', error);
-          return reject({ error: '合并失败', details: error });
+      ffmpegProcess.on('close', (code) => {
+        if (code === 0) {
+          resolve({ message: '合并成功', output: outputPath });
+        } else {
+          reject({ error: '合并失败', details: `ffmpeg process exited with code ${code}` });
         }
-        if (stderr) {
-          logger.error('ffmpeg stderr:', stderr);
-        }
-        logger.info('ffmpeg stdout:', stdout);
-        resolve({ message: '合并成功', output: outputPath });
+      });
+
+      ffmpegProcess.on('error', (error) => {
+        reject({ error: '合并失败', details: error });
       });
     });
 

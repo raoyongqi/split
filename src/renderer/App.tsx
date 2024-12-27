@@ -10,6 +10,8 @@ import Video from "./components/Video";
 // import Cid from "./components/Cid";
 import Play from "./components/Play";
 import Ara from "./components/Ara";
+import Details from "./components/Details";
+
 
 const App: React.FC = () => {
   return (
@@ -29,7 +31,7 @@ const App: React.FC = () => {
           {/* <Route path="/cid" element={<Cid />} /> */}
           <Route path="/play" element={<Play />} />
           <Route path="/ara" element={<Ara />} />
-
+          <Route path="/details" element={<Details />} />
         </Routes>
       </div>
     </Router>

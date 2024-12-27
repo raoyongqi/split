@@ -48,6 +48,8 @@ declare global {
       
       addUriToAria2: (url: string) => Promise<any>;
 
+      
+      getBVDetails: (s: string) => Promise<any>;
     };
 
   }

@@ -8,17 +8,17 @@ const Navbar: React.FC = () => {
         <li style={{ margin: "0 10px" }}>
           <Link to="/">Home</Link>
         </li>
-        <li style={{ margin: "0 10px" }}>
+        {/* <li style={{ margin: "0 10px" }}>
           <Link to="/login">Login</Link>
-        </li>
+        </li> */}
 
         <li style={{ margin: "0 10px" }}>
           <Link to="/switch">Switch</Link>
         </li>
         
-        <li style={{ margin: "0 10px" }}>
+        {/* <li style={{ margin: "0 10px" }}>
           <Link to="/search">Search</Link>
-        </li>
+        </li> */}
 
         <li style={{ margin: "0 10px" }}>
           <Link to="/read">Read</Link>
@@ -40,7 +40,9 @@ const Navbar: React.FC = () => {
         <li style={{ margin: "0 10px" }}>
           <Link to="/ara">Ara</Link>
         </li>
-
+        <li style={{ margin: "0 10px" }}>
+          <Link to="/details">Details</Link>
+        </li>
       </ul>
     </nav>
   );

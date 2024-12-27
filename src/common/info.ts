@@ -7,7 +7,7 @@ import configService from '../main/config-service';
 import {getWbiKeys,encWbi} from './wbi';
 import { useLogger } from '../common/logger';
 
-import {downloadPlayUrlJson,downloadPlayUrlM4s } from '../common/download';
+import {downloadPlayUrlJson,downloadPlayUrlM4s,saveVideoDetails } from '../common/download';
 
 
 import {mergeM4sToM4a} from '../main/service/ff';
@@ -225,6 +225,8 @@ export async function getPlayUrl(bvid: string,qn: number = 16, fnval: number = 1
 
   // 构建请求每个 CID 的 URL
   const getCidUrl = async (cid: number) => {
+
+
     const params = {
       cid: cid,
       bvid: bvid,
@@ -270,9 +272,6 @@ export async function getPlayUrl(bvid: string,qn: number = 16, fnval: number = 1
         await downloadPlayUrlJson(result,bvid,cid,qnfnval)
         
         await downloadPlayUrlM4s(result,bvid,cid,qnfnval)
-        
-        //第二步耗时导致第三步执行失败
-        await mergeM4sToM4a(result,bvid,cid,qnfnval)
 
 
         logger.info(`Play URL result for CID ${cid}:`, result); // 调试用日志
@@ -338,5 +337,140 @@ export async function getVideoPlayUrl(bvid: string): Promise<any> {
   } catch (error) {
     console.error('Error fetching video play URL:', error);
     throw error; // 重新抛出错误以便调用方处理
+  }
+}
+
+// 单个BV获取
+
+
+export async function getPlayUrlSig(bvid: string, qn: number = 16, fnval: number = 16) {
+  const cookieString = await configService.fns.get('cookieString');
+  const baseUrl = 'https://api.bilibili.com/x/player/playurl';
+
+  // 设置自定义请求头
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0',
+    'Cookie': cookieString, // 传入 cookie 字符串
+    referer: 'https://message.bilibili.com/',
+  };
+
+  const getCidUrl = async (cid: number) => {
+    const params = {
+      cid: cid,
+      bvid: bvid,
+      qn: qn,
+      fnval: fnval, // 使用传入的 fnval 或默认值
+    };
+
+    // 获取签名后的查询参数
+    const signedQuery = await getQuery(params);
+
+    // 构建最终的请求 URL
+    const finalUrl = `${baseUrl}?${signedQuery}`;
+
+    // 请求并返回结果
+    try {
+      const response = await axios.get(finalUrl, { headers });
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching play URL for CID ${cid}:`, error);
+      return null; // 如果请求失败，返回 null
+    }
+  };
+
+  try {
+    // 获取视频详情
+    const videoDetails = await getVideoDetails(bvid);
+    
+    // 调用保存视频详情的函数
+    await saveVideoDetails(bvid, videoDetails);
+
+    if (videoDetails.pages.length === 1) {
+      const cid = videoDetails.pages[0].cid;
+      console.log('这是单p视频');
+
+      const result = await getCidUrl(cid);
+      const qnfnval = `${qn}_${fnval}`;
+      
+      await downloadPlayUrlJson(result, bvid, cid, qnfnval);
+      await downloadPlayUrlM4s(result, bvid, cid, qnfnval);
+
+      return result; // 返回单P视频的结果
+
+    } else {
+      console.log('这是多p视频');
+
+      const multiPageResults = [];
+
+      // 遍历所有页面
+      for (const item of videoDetails.pages) {
+        try {
+          const cid = item.cid;
+          const qnfnval = `${qn}_${fnval}`;
+
+          // 获取播放 URL
+          const result = await getCidUrl(cid);
+
+          // 执行下载操作
+          await downloadPlayUrlJson(result, bvid, cid, qnfnval);
+          
+          await downloadPlayUrlM4s(result, bvid, cid, qnfnval);
+
+          logger.info(`Successfully downloaded play URLs for CID ${cid}`);
+
+          multiPageResults.push(result); // 将每个页面的结果保存到数组中
+
+        } catch (error) {
+          console.error(`Error processing CID ${item.cid}:`, error);
+        }
+      }
+
+      // 返回所有页面的结果
+      return multiPageResults;
+    }
+  } catch (error) {
+    console.error('Error fetching play URLs:', error);
+    throw error;
+  }
+}
+
+
+export async function getVideoDetails(bvid: string) {
+  try {
+    // 获取 cookieString
+    const cookieString = await configService.fns.get('cookieString');
+
+    // 定义请求头
+    const headers = {
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0',  // 注意：不含敏感子串
+      'Cookie': `${cookieString}`,  // 替换为你的 SESSDATA 和 buvid3 值
+      'referer': 'https://message.bilibili.com/',
+    };
+
+    // Bilibili 视频详情接口
+    const url = `https://api.bilibili.com/x/web-interface/view`;
+
+    // 发送 GET 请求
+    const response = await axios.get(url, {
+      params: {
+        bvid: bvid // 传递 bvid 参数
+      },
+      headers: headers, // 使用自定义请求头
+    });
+    
+    // 检查返回的数据
+    if (response.data && response.data.code === 0) {
+      // 如果请求成功，返回视频数据
+      
+      return response.data.data;
+    
+    } else {
+      // 如果返回的 code 不是 0，则表示请求失败
+      console.error('Failed to fetch video details:', response.data.message);
+      throw new Error(response.data.message || 'Unknown error');
+    }
+  } catch (error) {
+    console.error('Error fetching video details:', error);
+    throw error; // 抛出错误以供调用方处理
   }
 }
