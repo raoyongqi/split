@@ -26,11 +26,23 @@ const Play: React.FC = () => {
       const videoData = response.data; // 假设返回的第一个结果包含 CID
 
 
-      const qnfnval = `${qn}_${fnval}`;
-      await window.electronAPI.downloadPlayUrl(response,bvid,qnfnval);
+      if (Array.isArray(videoData) && videoData.length > 0) {
+        // 判断是否为单P视频
+        if (videoData.length === 1 && videoData[0].page === 1) {
 
-      
-      console.log(videoData); // 在控制台打印 CID
+          console.log('This is a single-page video');
+        } else if (videoData.length > 1) {
+
+          console.log('This is a multi-page video');
+
+        } else {
+          console.log(videoData);
+        }
+      } else {
+        console.log(videoData);
+      }
+    
+
       message.success('CID fetched successfully!');
     } catch (error) {
       message.error('Failed to fetch CID');

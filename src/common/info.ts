@@ -6,6 +6,13 @@ import configService from '../main/config-service';
 
 import {getWbiKeys,encWbi} from './wbi';
 import { useLogger } from '../common/logger';
+
+import {downloadPlayUrlJson,downloadPlayUrlM4s } from '../common/download';
+
+
+import {mergeM4sToM4a} from '../main/service/ff';
+
+
 const { logger } = useLogger('silly');
 
 export async function getSelfInfo() {
@@ -236,8 +243,11 @@ export async function getPlayUrl(bvid: string,qn: number = 16, fnval: number = 1
       const response = await axios.get(finalUrl, { headers });
 
       return response.data;
+
     } catch (error) {
+      
       console.error(`Error fetching play URL for CID ${cid}:`, error);
+      
       return null; // 如果请求失败，返回 null
     }
   };
@@ -253,7 +263,18 @@ export async function getPlayUrl(bvid: string,qn: number = 16, fnval: number = 1
       cidList.map(async (cid) => {
 
         const result = await getCidUrl(cid);
+
+        const qnfnval = `${qn}_${fnval}`
         
+
+        await downloadPlayUrlJson(result,bvid,cid,qnfnval)
+        
+        await downloadPlayUrlM4s(result,bvid,cid,qnfnval)
+        
+        //第二步耗时导致第三步执行失败
+        await mergeM4sToM4a(result,bvid,cid,qnfnval)
+
+
         logger.info(`Play URL result for CID ${cid}:`, result); // 调试用日志
         
         return result;
@@ -284,5 +305,38 @@ export async function getPlayUrl(bvid: string,qn: number = 16, fnval: number = 1
 
 
 
+export async function getVideoPlayUrl(bvid: string): Promise<any> {
+  // 定义 `playurl` 接口 URL
+  const urlGetPlayUrl = `https://api.bilibili.com/x/player/wbi/playurl`; // 使用新的 URL
 
+  // 获取 Cookie 字符串（包括 SESSDATA 和 buvid3）
+  const cookieString = await configService.fns.get('cookieString'); // 获取存储的 cookie 字符串
+  
+  // 如果 cookieString 未定义，可以在这里加个验证或提示
+  if (!cookieString) {
+    throw new Error('Cookie (SESSDATA and buvid3) not found!');
+  }
 
+  // 定义请求头
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0',  // 注意：不含敏感子串
+    'Cookie': `${cookieString}`,  // 替换为你的 SESSDATA 和 buvid3 值
+    'referer': 'https://message.bilibili.com/', // 参考来源页面，确保请求来源正确
+  };
+
+  // 定义请求参数
+  const params = {
+    bvid,       // 视频的 bvid
+  };
+
+  try {
+    // 发送 GET 请求
+    const response = await axios.get(urlGetPlayUrl, { headers, params });
+
+    // 返回响应数据
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching video play URL:', error);
+    throw error; // 重新抛出错误以便调用方处理
+  }
+}

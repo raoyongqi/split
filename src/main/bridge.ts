@@ -213,7 +213,7 @@ ipcMain.handle('play-url', async (event, bvid:string,qn:number,fnval:number) => 
 
 ipcMain.handle('download-play-json', async (event, data:any,bvid:string,qnfnval:string) => {
   
-  return await downloadPlayUrlJson(data,bvid,qnfnval);
+  return await downloadPlayUrlJson(data,bvid,1,qnfnval);
 
 });
 
