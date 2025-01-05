@@ -32,6 +32,9 @@ declare global {
 
 
       saveSearchResult: (data, keyword: string, pageString: string) => Promise<any>;
+      
+      
+      saveSearchResultMock: (data, keyword: string, pageString: string) => Promise<any>;
 
       readSearch: () => Promise<any>;
       
@@ -55,7 +58,8 @@ declare global {
       
       addUriToAria2: (url: string) => Promise<any>;
 
-      
+      getPlaySearch: (search: string,s: string,qn:number,fnval:number) => Promise<any>;
+
       getBVDetails: (s: string) => Promise<any>;
     };
 

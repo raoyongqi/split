@@ -24,10 +24,10 @@ const Navbar: React.FC = () => {
           <Link to="/read">Read</Link>
         </li>
 
-        <li style={{ margin: "0 10px" }}>
+        {/* <li style={{ margin: "0 10px" }}>
           <Link to="/video">Video</Link>
         </li>
-        
+         */}
         {/* <li style={{ margin: "0 10px" }}>
           <Link to="/cid">Cid</Link>
         </li> */}
@@ -40,9 +40,9 @@ const Navbar: React.FC = () => {
         <li style={{ margin: "0 10px" }}>
           <Link to="/ara">Ara</Link>
         </li>
-        <li style={{ margin: "0 10px" }}>
+        {/* <li style={{ margin: "0 10px" }}>
           <Link to="/details">Details</Link>
-        </li>
+        </li> */}
 
         <li style={{ margin: "0 10px" }}>
           <Link to="/bv">Bv</Link>

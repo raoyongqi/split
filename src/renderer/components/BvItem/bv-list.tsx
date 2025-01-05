@@ -13,8 +13,13 @@ const BvList: React.FC = () => {
   const isCancelledRef = useRef(false); // Ref to track the cancellation state
   const [Downloading, setDownloading] = useState(false);
 
-  
+  // BV1pA4m1A7gb 怎样才能种好有机西红柿？这样做西红柿病虫害少结的多不裂果	835	0	0	植物,技巧,种菜,种植,蔬菜,每天一个新知识,哔哩哔哩开学季	13	2:58
+// 这个视频获取失败，不知道为啥
 
+
+//修改获取失败的逻辑
+
+//让log小一点
   useEffect(() => {
     // If bv is not empty, start saving process
     if (bv.length > 0) {
@@ -79,14 +84,20 @@ const BvList: React.FC = () => {
         }
 
         const result = bv[i];
+        //打印当前bv号，便于调试
+        console.log(result)
 
         if (!result) {
           message.error(`该行BV号没有: 第 ${i + 1} 条`);
+          console.log(`该行BV号没有: 第 ${i + 1} 条`)
+
           dispatch(removeBv({ id: result }));
           
           continue;
         }
-    
+
+
+        
         // Start processing the current bv
         try {
           await handleBv(result); // Download or process the video data for this bv
