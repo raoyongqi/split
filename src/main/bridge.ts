@@ -97,29 +97,32 @@ ipcMain.handle('get-search-video', async (event, keyword: string,page: number) =
 
 
 
-ipcMain.handle('save-search', (event, search) => {
-  // 直接指定文件保存路径
-  const filePath = path.join(__dirname, '..', '..', 'common', 'search.txt'); // 设置保存路径
 
+
+ipcMain.handle('save-search', async (event, search) => {
+  const dirPath = path.join(__dirname, '..', '..', 'common');
+  const filePath = path.join(dirPath, 'search.txt');
   const tempPath = `${filePath}.tmp`;
 
-  // 保存文件
-  fs.writeFile(tempPath, search, 'utf8', (err) => {
-    if (err) {
-      logger.error('Failed to write to temp file:', err);
-      return;
+  try {
+    // 确保目录存在
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
     }
 
-    fs.rename(tempPath, filePath, (err) => {
-      if (err) {
-        logger.error('Failed to replace the original file:', err);
-      } else {
-        logger.info(typeof filePath);
+    // 写入临时文件
+    await fs.promises.writeFile(tempPath, search, 'utf8');
 
-        logger.info(filePath);
-      }
-    });
-  });
+    // 检查临时文件是否存在
+    if (!fs.existsSync(tempPath)) {
+      return; // 跳过保存
+    }
+
+    // 重命名临时文件为最终文件
+    await fs.promises.rename(tempPath, filePath);
+  } catch (err) {
+    logger.error('Failed to save search:', err);
+  }
 });
 
 
@@ -281,10 +284,12 @@ ipcMain.handle('read-list-json', async (event, folderPath) => {
   try {
     // 确定目标文件夹路径
     const baseSaveDir = path.join(os.homedir(), 'Music', 'bilibiliSearch', folderPath);
-    
+
     // 检查文件夹是否存在
     if (!fs.existsSync(baseSaveDir)) {
-      throw new Error('Folder does not exist.');
+      console.warn('Folder does not exist. Creating folder:', baseSaveDir);
+      fs.mkdirSync(baseSaveDir, { recursive: true }); // 创建文件夹及其父文件夹
+      return null; // 创建后返回 null
     }
 
     // 获取文件夹中的所有文件
@@ -293,14 +298,22 @@ ipcMain.handle('read-list-json', async (event, folderPath) => {
     // 筛选出 .json 文件
     const jsonFiles = files.filter(file => path.extname(file) === '.json');
 
+    // 如果没有找到 JSON 文件
     if (jsonFiles.length === 0) {
-      throw new Error('No JSON files found.');
+      console.warn('No JSON files found in folder:', baseSaveDir);
+      return null; // 立即返回
     }
 
     // 遍历 JSON 文件，直到找到一个有效的 bvid
     for (let i = 0; i < jsonFiles.length; i++) {
       const jsonFile = jsonFiles[i];
       const filePath = path.join(baseSaveDir, jsonFile);
+
+      // 检查文件是否存在，不存在则跳过
+      if (!fs.existsSync(filePath)) {
+        console.warn('JSON file does not exist:', filePath);
+        continue; // 跳过当前文件
+      }
 
       // 读取文件内容
       const fileContent = fs.readFileSync(filePath, 'utf8');
@@ -312,14 +325,10 @@ ipcMain.handle('read-list-json', async (event, folderPath) => {
       // 查找第一个未被占用的 bvid
       for (let bvid of bvids) {
         if (!getSubdirectoriesOfSubdirectories('C:\\Users\\r\\Music\\bilibiliSearch').includes(bvid)) {
-          // Do something when the bvid is not found in the subdirectories
-          if(!getImmediateSubdirectories('C:\\Users\\r\\Music\\bilibiliURL').includes(bvid))
-          {
-            return bvid; }// 返回第一个不存在的 bvid
-
-        
+          if (!getImmediateSubdirectories('C:\\Users\\r\\Music\\bilibiliURL').includes(bvid)) {
+            return bvid; // 返回第一个不存在的 bvid
+          }
         }
-        
       }
     }
 
@@ -328,7 +337,7 @@ ipcMain.handle('read-list-json', async (event, folderPath) => {
 
   } catch (error) {
     console.error('Error reading JSON files:', error);
-    return { error: error}; // 返回错误信息
+    return { error: error }; // 返回错误信息
   }
 });
 

@@ -41,7 +41,7 @@ declare global {
 
       saveSearch: (s: string) => void;
       
-      saveBv: (s: string) => void;
+      // saveBv: (s: string) => void;
 
       getCidByAid: (s: number) => Promise<any>;
 

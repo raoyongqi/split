@@ -527,6 +527,11 @@ export async function getVideoDetails(bvid: string) {
 export async function getPlayUrlSearch(search: string,bvid: string, qn: number = 16, fnval: number = 16) {
   const saveDir = path.join(os.homedir(), 'Music', 'bilibiliSearch', search, bvid);
 
+
+  if (fs.existsSync(saveDir)) {
+    throw new Error(`目录 ${saveDir} 已存在，避免重复下载。`);
+  }
+
   // 检查文件夹是否存在，如果不存在则创建
   if (!fs.existsSync(saveDir)) {
     fs.mkdirSync(saveDir, { recursive: true });
@@ -536,10 +541,6 @@ export async function getPlayUrlSearch(search: string,bvid: string, qn: number =
   }
   
 
-  // 判断路径是否存在，如果存在抛出错误
-  if (fs.existsSync(saveDir)) {
-    throw new Error(`目录 ${saveDir} 已存在，避免重复下载。`);
-  }
 
 
   const cookieString = await configService.fns.get('cookieString');
@@ -587,7 +588,6 @@ export async function getPlayUrlSearch(search: string,bvid: string, qn: number =
       
       const cid = videoDetails.pages[0].cid;
       
-      logger.info(`这是单p视频`);
 
       const result = await getCidUrl(cid);
       const qnfnval = `${qn}_${fnval}`;
@@ -600,7 +600,6 @@ export async function getPlayUrlSearch(search: string,bvid: string, qn: number =
 
     } else {
       
-      logger.info(`这是多p视频${videoDetails.pages.length}`);
 
       const multiPageResults = [];
 
@@ -619,7 +618,6 @@ export async function getPlayUrlSearch(search: string,bvid: string, qn: number =
           await downloadM4sPlay(result, search,bvid, cid, qnfnval);
     
 
-          logger.info(`Successfully downloaded play URLs for CID ${cid}`);
 
           multiPageResults.push(result); // 将每个页面的结果保存到数组中
 

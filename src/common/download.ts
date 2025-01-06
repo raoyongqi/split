@@ -120,8 +120,7 @@ export async function downloadPlayUrlM4s(data: any, bvid: string, cid: number, q
 
     // 保存每个任务的 GID
     const downloadGids: string[] = [];
-    logger.info(`baseUrls length: ${baseUrls.length}`)
-    logger.info(`baseUrls : ${baseUrls}`)
+
     // 下载每个 baseUrl 并获取其 GID
     for (let i = 0; i < baseUrls.length; i++) {
       const uri = baseUrls[i];
@@ -136,14 +135,12 @@ export async function downloadPlayUrlM4s(data: any, bvid: string, cid: number, q
 
       // 保存 GID 以便后续检查状态
       downloadGids.push(gid);
-      logger.info(`Started downloading: ${uri}, GID: ${gid}`);
     }
 
     // 等待所有下载完成
     await waitForAllDownloads(downloadGids);
 
     // 下载完成后，调用合并函数
-    logger.info('All downloads completed. Starting merge...');
 
 
     return await mergeM4sToM4a(data, bvid, cid, qnfnval);
@@ -193,7 +190,6 @@ export async function downloadM4sPlay(data: any, search: string,bvid: string, ci
 
       // 保存 GID 以便后续检查状态
       downloadGids.push(gid);
-      logger.info(`Started downloading: ${uri}, GID: ${gid}`);
     }
 
     // 等待所有下载完成
@@ -225,7 +221,6 @@ const checkStatus = async (gid: string) => {
     const status = await aria2Service.fns.invoke('aria2.tellStatus', gid, ["gid", "status"]);
     const currentStatus = status.status; // 获取当前任务的状态
     
-    logger.info(status.status)
     if (currentStatus === 'active' || currentStatus === 'waiting') {
       // 如果任务正在下载或等待中，继续检查状态
       // 递归调用 checkStatus，直到下载完成
