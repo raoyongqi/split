@@ -2,7 +2,7 @@
 import { Provider } from 'react-redux';
 import store from './store/store';
 import { Container } from '@mui/material';
-import BvList from './BvItem/bv-list';
+import BvList from '../../../common/bv-list';
 import BvStat from './BvItem/bv-stat';
 import React from 'react';
 

@@ -19,7 +19,7 @@ import path from 'path';
 import aria2Service from './service/aria2';
 
 
-import {getPageInfo,getSearchVideo,getCidByAid,getCidByBvid,getVideoDetails,getPlayUrlSig} from '../common/info';
+import {getPageInfo,getSearchVideo,getCidByAid,getCidByBvid,getVideoDetails,getPlayUrlSig, getPlayUrlSearch} from '../common/info';
 
 const { logger } = useLogger('silly');
 
@@ -95,42 +95,6 @@ ipcMain.handle('get-search-video', async (event, keyword: string,page: number) =
 });
 
 
-
-ipcMain.handle('save-search-result', async (event, data, keyword: string, pageString: string) => {
-  try {
-    // 去掉不合法的字符，确保文件名安全
-    const safeKeyword = keyword.replace(/[\\\/:*?"<>|]/g, '');
-
-    // 设置保存目录
-    const saveDir = path.join(os.homedir(), 'Music', 'bilibili', safeKeyword);
-
-    // 如果目录不存在，则创建它
-    if (!fs.existsSync(saveDir)) {
-      fs.mkdirSync(saveDir, { recursive: true });
-    }
-
-    // 设置保存的文件路径
-    const savePath = path.join(saveDir, `${pageString}.json`);
-
-    if (fs.existsSync(savePath)) {
-      return { success: false, error: '文件已经存在，跳过保存' };
-    }
-    // 将 data 转换为 JSON 格式
-    const jsonData = JSON.stringify(data, null, 2); // 格式化 JSON 数据（增加缩进）
-
-    // 将 JSON 数据保存到文件
-    fs.writeFileSync(savePath, jsonData, 'utf-8');
-
-    // 返回保存成功的路径
-    return { success: true, path: savePath };
-  } catch (error) {
-    console.error('保存数据失败:', error);
-    return { success: false, error: error };
-
-  }
-
-
-});
 
 
 ipcMain.handle('save-search', (event, search) => {
@@ -210,6 +174,11 @@ ipcMain.handle('play-url', async (event, bvid:string,qn:number,fnval:number) => 
 
 });
 
+ipcMain.handle('play-search', async (event, search:string,bvid:string,qn:number,fnval:number) => {
+
+  return await getPlayUrlSearch(search,bvid,qn,fnval);
+
+});
 
 ipcMain.handle('download-play-json', async (event, data:any,bvid:string,qnfnval:string) => {
   
@@ -306,6 +275,112 @@ ipcMain.handle('save-bv', async (event, bvid) => {
     });
   });
 });
+
+
+ipcMain.handle('read-list-json', async (event, folderPath) => {
+  try {
+    // 确定目标文件夹路径
+    const baseSaveDir = path.join(os.homedir(), 'Music', 'bilibiliSearch', folderPath);
+    
+    // 检查文件夹是否存在
+    if (!fs.existsSync(baseSaveDir)) {
+      throw new Error('Folder does not exist.');
+    }
+
+    // 获取文件夹中的所有文件
+    const files = fs.readdirSync(baseSaveDir);
+
+    // 筛选出 .json 文件
+    const jsonFiles = files.filter(file => path.extname(file) === '.json');
+
+    if (jsonFiles.length === 0) {
+      throw new Error('No JSON files found.');
+    }
+
+    // 遍历 JSON 文件，直到找到一个有效的 bvid
+    for (let i = 0; i < jsonFiles.length; i++) {
+      const jsonFile = jsonFiles[i];
+      const filePath = path.join(baseSaveDir, jsonFile);
+
+      // 读取文件内容
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      const jsonData = JSON.parse(fileContent);
+
+      // 获取所有 bvid
+      const bvids = jsonData.data.result.map((item: { bvid: any; }) => item.bvid);
+
+      // 查找第一个未被占用的 bvid
+      for (let bvid of bvids) {
+        if (!getSubdirectoriesOfSubdirectories('C:\\Users\\r\\Music\\bilibiliSearch').includes(bvid)) {
+          // Do something when the bvid is not found in the subdirectories
+          if(!getImmediateSubdirectories('C:\\Users\\r\\Music\\bilibiliURL').includes(bvid))
+          {
+            return bvid; }// 返回第一个不存在的 bvid
+
+        
+        }
+        
+      }
+    }
+
+    // 如果所有 JSON 文件都没有可用的 bvid
+    return null;
+
+  } catch (error) {
+    console.error('Error reading JSON files:', error);
+    return { error: error}; // 返回错误信息
+  }
+});
+
+function getImmediateSubdirectories(folderPath: string): string[] {
+  let allDirectories: string[] = [];
+  
+  // Get all files and directories inside the current folder
+  const files = fs.readdirSync(folderPath);
+
+  // Iterate over the items in the folder
+  for (let file of files) {
+    const fullPath = path.join(folderPath, file);
+    // If it's a directory, add only the directory name (not the full path) to the list
+    if (fs.statSync(fullPath).isDirectory()) {
+      allDirectories.push(file); // Push the directory name, not the full path
+    }
+  }
+
+  // Return all found immediate directories (only the names)
+  return allDirectories;
+}
+
+
+function getSubdirectoriesOfSubdirectories(folderPath: string): string[] {
+  let allDirectories: string[] = [];
+  
+  // Get all files and directories inside the current folder
+  const files = fs.readdirSync(folderPath);
+
+  // Iterate over the items in the folder
+  for (let file of files) {
+    const fullPath = path.join(folderPath, file);
+    // If it's a directory, we check for subdirectories inside it (second level)
+    if (fs.statSync(fullPath).isDirectory()) {
+      // Get subdirectories inside this directory
+      const subFiles = fs.readdirSync(fullPath);
+      
+      for (let subFile of subFiles) {
+        const subDirPath = path.join(fullPath, subFile);
+        if (fs.statSync(subDirPath).isDirectory()) {
+          // Add only the subdirectory name (not the full path)
+          allDirectories.push(subFile); 
+        }
+      }
+    }
+  }
+
+  // Return all found subdirectory names (not full paths)
+  return allDirectories;
+}
+
+// Main process handler for getting directories
 
 
 };

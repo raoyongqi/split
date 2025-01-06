@@ -3,5 +3,5 @@
   "compilerOptions": {
     "outDir": "../../build/"
   },
-  "include": ["./", "../renderer/App.ts", "../common/login.ts", "../common/send.ts"]
+  "include": ["./", "../renderer/App.ts", "../common/login.ts", "../common/send.ts", "../../common/bv-list.tsx"]
 }

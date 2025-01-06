@@ -2,7 +2,7 @@
 import { Provider } from 'react-redux';
 import store from './store/store';
 import { Container } from '@mui/material';
-import SearchList from './ReadItem/search-list';
+import SearchList from '../../../common/search-list';
 import SearchStat from './ReadItem/search-stat';
 import React from 'react';
 

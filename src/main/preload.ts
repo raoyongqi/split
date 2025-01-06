@@ -29,8 +29,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   getSearchVideo: (keyword: string,page: number) => ipcRenderer.invoke('get-search-video', keyword,page),
 
-  saveSearchResult: (data: any[], keyword: string, page: string) => ipcRenderer.invoke('save-search-result',data, keyword,page),
-  
+
   readSearch: () => ipcRenderer.invoke('read-search'),
   
   
@@ -43,9 +42,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getCidByBvid: (bvid: string) => ipcRenderer.invoke('bvid-cid', bvid),
   
   getPlayUrl: (bvid: string,qn:number,fnval:number) => ipcRenderer.invoke('play-url', bvid,qn,fnval),
+  
+  getPlaySearch: (search: string,bvid: string,qn:number,fnval:number) => ipcRenderer.invoke('play-search', search,bvid,qn,fnval),
 
   downloadPlayUrl: (data: any[],bvid: string,qnfnval: string) => ipcRenderer.invoke('download-play-json', data,bvid,qnfnval),
-  
+
   addUriToAria2: (uri: string) => ipcRenderer.invoke('aria2.addUri', uri),
 
   getBVDetails: (uri: string) => ipcRenderer.invoke('get-video-details', uri),
@@ -53,6 +54,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   readBv: () => ipcRenderer.invoke('read-bv'),
   
   saveBv: (bv: string) => ipcRenderer.invoke('save-bv', bv),
+
+
+
 
 }, 
 );

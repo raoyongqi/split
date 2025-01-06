@@ -31,10 +31,6 @@ declare global {
       getSearchVideo: (keyword: string,page: number) => Promise<any>; // 返回类型为 Promise<any>，表示返回的是 JSON 数据
 
 
-      saveSearchResult: (data, keyword: string, pageString: string) => Promise<any>;
-      
-      
-      saveSearchResultMock: (data, keyword: string, pageString: string) => Promise<any>;
 
       readSearch: () => Promise<any>;
       
@@ -61,6 +57,11 @@ declare global {
       getPlaySearch: (search: string,s: string,qn:number,fnval:number) => Promise<any>;
 
       getBVDetails: (s: string) => Promise<any>;
+
+
+      readListJson: (s: string) => Promise<any>;
+
+
     };
 
   }
