@@ -7,7 +7,7 @@ import path from 'path';
 
 import aria2Service from '../main/service/aria2';
 
-import {mergeM4sToM4a} from '../main/service/ff';
+import {mergeM4sToM4a,mergeM4sPlay} from '../main/service/ff';
 
 import { useLogger } from '../common/logger';
 
@@ -43,7 +43,6 @@ export async function downloadPlayUrlJson(data: any, bvid: string, cid: number, 
 
     fs.writeFileSync(savePath, jsonData, 'utf-8');  // 保存文件
 
-    console.log(`JSON data saved successfully to ${savePath}`);
 
     return savePath; // 返回保存的路径
 
@@ -198,7 +197,7 @@ export async function downloadM4sPlay(data: any, search: string,bvid: string, ci
     // 下载完成后，调用合并函数
 
 
-    return await mergeM4sToM4a(data, bvid, cid, qnfnval);
+    return await mergeM4sPlay(data, search,bvid, cid, qnfnval);
 
   } catch (error) {
     logger.error('Error downloading play URL video:', error);
@@ -255,5 +254,25 @@ export async function saveVideoDetails(bvid: string, videoDetails: any) {
   fs.writeFileSync(filePath, JSON.stringify(videoDetails, null, 2), 'utf8');
 
   
-  console.log('Video details saved to:', filePath);
 }
+
+
+export async function saveVideoDetailsPlay(search: string,bvid: string, videoDetails: any) {
+
+
+  const baseSaveDir = path.join(os.homedir(), 'Music', 'bilibiliSearch',`${search}`,`${bvid}`);
+
+  // 获取当前时间戳，作为文件名的一部分
+  const filePath = path.join(baseSaveDir, `${bvid}.json`); // 保存文件路径
+
+  // 确保保存路径存在
+  if (!fs.existsSync(baseSaveDir)) {
+    fs.mkdirSync(baseSaveDir, { recursive: true });
+  }
+
+  // 将视频详情保存为 JSON 文件
+  fs.writeFileSync(filePath, JSON.stringify(videoDetails, null, 2), 'utf8');
+
+  
+}
+

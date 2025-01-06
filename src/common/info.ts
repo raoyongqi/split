@@ -9,7 +9,7 @@ import os from 'os';
 import {getWbiKeys,encWbi} from './wbi';
 import { useLogger } from '../common/logger';
 
-import {downloadM4sPlay, downloadPlayUrlJson,downloadPlayUrlM4s,downloadPlayUrlSearch,saveVideoDetails } from '../common/download';
+import {downloadM4sPlay, downloadPlayUrlJson,downloadPlayUrlM4s,downloadPlayUrlSearch,saveVideoDetails, saveVideoDetailsPlay } from '../common/download';
 
 
 import {mergeM4sToM4a} from '../main/service/ff';
@@ -582,7 +582,7 @@ export async function getPlayUrlSearch(search: string,bvid: string, qn: number =
     const videoDetails = await getVideoDetails(bvid);
     
     // 调用保存视频详情的函数
-    await saveVideoDetails(bvid, videoDetails);
+    await saveVideoDetailsPlay(search,bvid, videoDetails);
 
     if (videoDetails.pages.length === 1) {
       

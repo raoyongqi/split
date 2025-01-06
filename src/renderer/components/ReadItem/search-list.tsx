@@ -62,6 +62,16 @@ const SearchList: React.FC = () => {
   
       while (consecutiveNulls < maxConsecutiveNulls) {
         // 读取 bvid
+        
+        if (isCancelledRef.current) {
+          setDownloading(false); // 恢复按钮的可点击状态
+
+          message.info('操作已取消，关键词保留');
+          
+          setIsCancelled(false); // Reset cancellation state
+
+          return;
+        }
         bvid = await window.electronAPI.readListJson(keyword);
   
         if (bvid === null) {
@@ -71,6 +81,7 @@ const SearchList: React.FC = () => {
           console.log(`第 ${consecutiveNulls} 次读取返回 null`);
         } else {
           // 如果 bvid 有效，继续下一步，不退出
+          console.log(bvid)
           await window.electronAPI.getPlaySearch(keyword, bvid, 16, 16);
           message.success(`视频搜索完成，第 ${page} 页`);
           consecutiveNulls = 0; // 重置连续返回 null 的次数
@@ -119,7 +130,6 @@ const SearchList: React.FC = () => {
         }
 
         const result = search[i];
-        console.log(!result)
         
         for (let page = 1; page <= 50; page++) {
 
@@ -158,54 +168,46 @@ const SearchList: React.FC = () => {
 
 
   return (
-<Button
-  variant="contained" // 用于设置按钮的样式
-  color="primary"     // 设置按钮的颜色
-  onClick={() => handleSearch('申论', 1)}
-  style={{ marginTop: 20, marginLeft: 10 }}
->
-  搜索视频
-</Button>
-)
-//     <Box>
-//       <Typography variant="h6">
-//         Search Length: {search.length}
-//       </Typography>
 
-//       {/* Trigger deep bulk search */}
-//       <Button 
-//         variant="contained" 
-//         color="primary" 
-//         onClick={deepBulkSearch} 
-//         disabled={Downloading}
-//         style={{ marginTop: 20 }}
-//       >
-//         Deep Bulk Search (逐条处理)
-//       </Button>
+    <Box>
+      <Typography variant="h6">
+        Search Length: {search.length}
+      </Typography>
 
-//       {/* Cancel button to stop the operation */}
-//       <Button 
-//         variant="contained" 
-//         color="secondary" 
-//         onClick={handleCancel} 
-//         disabled={!Downloading} 
-//         style={{ marginTop: 20, marginLeft: 10 }}
-//       >
-//         {isCancelled ? '已取消' : '取消操作'}
-//       </Button>
+      {/* Trigger deep bulk search */}
+      <Button 
+        variant="contained" 
+        color="primary" 
+        onClick={deepBulkSearch} 
+        disabled={Downloading}
+        style={{ marginTop: 20 }}
+      >
+        Deep Bulk Search (逐条处理)
+      </Button>
+
+      {/* Cancel button to stop the operation */}
+      <Button 
+        variant="contained" 
+        color="secondary" 
+        onClick={handleCancel} 
+        disabled={!Downloading} 
+        style={{ marginTop: 20, marginLeft: 10 }}
+      >
+        {isCancelled ? '已取消' : '取消操作'}
+      </Button>
 
 
-//       {search.length > 0 && (
-//   <Typography variant="body1" style={{ marginTop: 20 }}>
-//     First search result: {search[0]}
-//   </Typography>
-// )}
+      {search.length > 0 && (
+  <Typography variant="body1" style={{ marginTop: 20 }}>
+    First search result: {search[0]}
+  </Typography>
+      )}
 
-//       {/* Display error message */}
-//       {error && <Typography color="error" variant="body2" style={{ marginTop: 20 }}>{error}</Typography>}
-//     </Box>
+      {/* Display error message */}
+      {error && <Typography color="error" variant="body2" style={{ marginTop: 20 }}>{error}</Typography>}
+    </Box>
     
-//   );
+  );
 };
 
 export default SearchList;

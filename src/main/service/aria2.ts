@@ -69,8 +69,6 @@ export async function initAria2cRpc() {
         })
         .on('message', (data) => {
           const msg = JSON.parse(data.toString('utf-8'));
-          console.log('<', JSON.stringify(msg));
-
           if (!msg.method) return;
           sendToAllBrowserWindows(msg.method, ...msg.params);
         });
@@ -107,9 +105,6 @@ const fns = {
         method,
         params: params,
       });
-
-      console.log('>', payload);
-
       ws.send(payload, (err) => {
         if (err) {
           reject(err);
