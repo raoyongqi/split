@@ -324,11 +324,28 @@ ipcMain.handle('read-list-json', async (event, folderPath) => {
 
       // 查找第一个未被占用的 bvid
       for (let bvid of bvids) {
-        if (!getSubdirectoriesOfSubdirectories('C:\\Users\\r\\Music\\bilibiliSearch').includes(bvid)) {
-          if (!getImmediateSubdirectories('C:\\Users\\r\\Music\\bilibiliURL').includes(bvid)) {
-            return bvid; // 返回第一个不存在的 bvid
-          }
+
+
+        //明天需要调试的位置
+        
+        const bilibiliSearchDir = 'C:\\Users\\r\\Music\\bilibiliSearch';
+        const bilibiliURLDir = 'C:\\Users\\r\\Music\\bilibiliURL';
+      
+        // 检查 'bilibiliSearch' 目录下的子目录的子目录是否包含 bvid
+        const subdirsSearch = getSubdirectoriesOfSubdirectories(bilibiliSearchDir);
+        if (subdirsSearch.includes(path.join(bilibiliSearchDir, bvid))) {
+          return path.join(bilibiliSearchDir, bvid); // 返回该文件夹地址
         }
+      
+        // 检查 'bilibiliURL' 目录下的直接子目录是否包含 bvid
+        const subdirsURL = getImmediateSubdirectories(bilibiliURLDir);
+        if (subdirsURL.includes(path.join(bilibiliURLDir, bvid))) {
+          return path.join(bilibiliURLDir, bvid); // 返回该文件夹地址
+        }
+      
+        return bvid; // 如果不在其中，返回 null
+
+
       }
     }
 

@@ -528,7 +528,27 @@ export async function getPlayUrlSearch(search: string,bvid: string, qn: number =
   const saveDir = path.join(os.homedir(), 'Music', 'bilibiliSearch', search, bvid);
 
 
+
+  // 考公视频包含多个p
+
+  //可能每次下载不完整，如果下载不完整尝试从上次下载的地方开始下载
+
+
   if (fs.existsSync(saveDir)) {
+    // 如果目录存在，检查是否包含 JSON 文件
+    const files = fs.readdirSync(saveDir);
+    const jsonFiles = files.filter(file => path.extname(file).toLowerCase() === '.json');
+  
+    if (jsonFiles.length > 0) {
+      console.log(`目录 ${saveDir} 中包含以下 JSON 文件:`);
+      console.log(jsonFiles);
+
+
+      
+    } else {
+      console.log(`目录 ${saveDir} 不包含 JSON 文件.`);
+    }
+  
     throw new Error(`目录 ${saveDir} 已存在，避免重复下载。`);
   }
 
@@ -592,10 +612,22 @@ export async function getPlayUrlSearch(search: string,bvid: string, qn: number =
       const result = await getCidUrl(cid);
       const qnfnval = `${qn}_${fnval}`;
       
-      await downloadPlayUrlSearch(result,search, bvid, cid, qnfnval);
-      
-      await downloadM4sPlay(result, search,bvid, cid, qnfnval);
+      // 执行下载操作
+      const downloadDir = path.join(os.homedir(), 'Music', 'bilibiliSearch',`${search}`,`${bvid}`, `${bvid}_${qnfnval}`); // 根据实际路径修改
 
+        if (fs.existsSync(downloadDir)) {
+
+          console.log(`目录 ${downloadDir} 已存在，跳过下载步骤。`);
+
+        } else {
+          // 如果目录不存在，执行下载步骤
+
+          console.log(`目录 ${downloadDir} 不存在，开始下载...`);
+
+          await downloadPlayUrlSearch(result, search, bvid, cid, qnfnval);
+          await downloadM4sPlay(result, search, bvid, cid, qnfnval);
+
+        }
       return result; // 返回单P视频的结果
 
     } else {
@@ -605,7 +637,10 @@ export async function getPlayUrlSearch(search: string,bvid: string, qn: number =
 
       // 遍历所有页面
       for (const item of videoDetails.pages) {
+
         try {
+        
+        
           const cid = item.cid;
           const qnfnval = `${qn}_${fnval}`;
 
@@ -613,10 +648,24 @@ export async function getPlayUrlSearch(search: string,bvid: string, qn: number =
           const result = await getCidUrl(cid);
 
           // 执行下载操作
-          await downloadPlayUrlSearch(result,search, bvid, cid, qnfnval);
-      
-          await downloadM4sPlay(result, search,bvid, cid, qnfnval);
-    
+          const downloadDir = path.join(os.homedir(), 'Music', 'bilibiliSearch',`${search}`,`${bvid}`, `${bvid}_${qnfnval}`); // 根据实际路径修改
+
+            if (fs.existsSync(downloadDir)) {
+
+              console.log(`目录 ${downloadDir} 已存在，跳过下载步骤。`);
+
+            } else {
+              // 如果目录不存在，执行下载步骤
+
+              console.log(`目录 ${downloadDir} 不存在，开始下载...`);
+
+              await downloadPlayUrlSearch(result, search, bvid, cid, qnfnval);
+              await downloadM4sPlay(result, search, bvid, cid, qnfnval);
+
+            }
+
+            
+
 
 
           multiPageResults.push(result); // 将每个页面的结果保存到数组中

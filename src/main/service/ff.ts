@@ -45,18 +45,16 @@ export async function mergeM4sToM4a(data: any, bvid: string, cid: number, qnfnva
     const concatFiles = m4sFiles.join('|');  // 使用管道符连接文件路径
     const commandArgs = ['-i', `concat:${concatFiles}`, '-c:a', 'aac', '-strict', 'experimental', outputPath];
     
-    logger.info(`Running ffmpeg command: "${ffmpegPath}" ${commandArgs.join(' ')}`);
 
     // 使用 child_process spawn 执行 ffmpeg 命令
     const ffmpegProcess = spawn(ffmpegPath, commandArgs);
 
     // 监听标准输出和标准错误输出
     ffmpegProcess.stdout.on('data', (data) => {
-      logger.info(`ffmpeg stdout: ${data.toString('utf-8')}`);
+
     });
 
     ffmpegProcess.stderr.on('data', (data) => {
-      logger.error(`ffmpeg stderr: ${data.toString('utf-8')}`);
     });
 
     // 等待进程结束
@@ -125,18 +123,17 @@ export async function mergeM4sPlay(data: any, search: string,bvid: string, cid: 
     const concatFiles = m4sFiles.join('|');  // 使用管道符连接文件路径
     const commandArgs = ['-i', `concat:${concatFiles}`, '-c:a', 'aac', '-strict', 'experimental', outputPath];
     
-    logger.info(`Running ffmpeg command: "${ffmpegPath}" ${commandArgs.join(' ')}`);
 
     // 使用 child_process spawn 执行 ffmpeg 命令
     const ffmpegProcess = spawn(ffmpegPath, commandArgs);
 
     // 监听标准输出和标准错误输出
     ffmpegProcess.stdout.on('data', (data) => {
-      logger.info(`ffmpeg stdout: ${data.toString('utf-8')}`);
+
     });
 
     ffmpegProcess.stderr.on('data', (data) => {
-      logger.error(`ffmpeg stderr: ${data.toString('utf-8')}`);
+
     });
 
     // 等待进程结束

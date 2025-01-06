@@ -22,8 +22,8 @@ export async function downloadCookie() {
     try {
       // 获取最新的 cookieString
       const cookieString = await configService.fns.get('cookieString');
-      console.log('Latest cookieString:', cookieString);
-  
+
+      
       // 打开文件保存对话框，允许用户选择保存位置
       const result = await dialog.showSaveDialog({
         title: 'Save Cookie File',

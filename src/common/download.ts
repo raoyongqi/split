@@ -257,13 +257,18 @@ export async function saveVideoDetails(bvid: string, videoDetails: any) {
 }
 
 
-export async function saveVideoDetailsPlay(search: string,bvid: string, videoDetails: any) {
 
-
-  const baseSaveDir = path.join(os.homedir(), 'Music', 'bilibiliSearch',`${search}`,`${bvid}`);
+export async function saveVideoDetailsPlay(search: string, bvid: string, videoDetails: any) {
+  const baseSaveDir = path.join(os.homedir(), 'Music', 'bilibiliSearch', `${search}`, `${bvid}`);
 
   // 获取当前时间戳，作为文件名的一部分
   const filePath = path.join(baseSaveDir, `${bvid}.json`); // 保存文件路径
+
+  // 检查是否已存在文件，如果存在则跳过下载
+  if (fs.existsSync(filePath)) {
+    console.log(`文件 ${filePath} 已存在，跳过下载步骤。`);
+    return; // 文件已存在，跳过下载
+  }
 
   // 确保保存路径存在
   if (!fs.existsSync(baseSaveDir)) {
@@ -272,7 +277,7 @@ export async function saveVideoDetailsPlay(search: string,bvid: string, videoDet
 
   // 将视频详情保存为 JSON 文件
   fs.writeFileSync(filePath, JSON.stringify(videoDetails, null, 2), 'utf8');
-
-  
+  console.log(`文件已保存到 ${filePath}`);
 }
+
 
