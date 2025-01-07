@@ -11,9 +11,6 @@ const SearchList: React.FC = () => {
   
   const dispatch = useDispatch<AppDispatch>();
 
-// 需要解决风控问题
-
-// 保存前需要校验数据的完整性
 
 // 暂停按钮出问题了
 
@@ -56,7 +53,6 @@ const SearchList: React.FC = () => {
 
   const handleSearch = async (keyword: string, page: number) => {
     try {
-      let bvid = null;
       let consecutiveNulls = 0; // 记录连续返回 null 的次数
       const maxConsecutiveNulls = 3; // 设置连续返回 null 的最大次数
   
@@ -72,8 +68,11 @@ const SearchList: React.FC = () => {
 
           return;
         }
-        bvid = await window.electronAPI.readListJson(keyword);
-  
+        const  bvid = await window.electronAPI.readListJson(keyword);
+
+
+        console.log(bvid);
+
         if (bvid === null) {
           // 如果 bvid 为空，调用 getSearchVideo
           await window.electronAPI.getSearchVideo(keyword, page);
@@ -81,7 +80,6 @@ const SearchList: React.FC = () => {
           console.log(`第 ${consecutiveNulls} 次读取返回 null`);
         } else {
           // 如果 bvid 有效，继续下一步，不退出
-          console.log(bvid)
           await window.electronAPI.getPlaySearch(keyword, bvid, 16, 16);
           message.success(`视频搜索完成，第 ${page} 页`);
           consecutiveNulls = 0; // 重置连续返回 null 的次数
@@ -170,6 +168,8 @@ const SearchList: React.FC = () => {
   return (
 
     <Box>
+
+
       <Typography variant="h6">
         Search Length: {search.length}
       </Typography>

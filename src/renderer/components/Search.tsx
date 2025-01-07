@@ -14,7 +14,7 @@ const Cid: React.FC = () => {
 
     setLoading(true);
     try {
-      // 调用 Electron IPC 获取 CID
+
       const response = await window.electronAPI.getCidByBvid(bvid);
       const fetchedCid = response.data; // 假设返回的第一个结果包含 CID
 

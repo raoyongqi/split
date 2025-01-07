@@ -333,20 +333,37 @@ ipcMain.handle('read-list-json', async (event, folderPath) => {
       
         // 检查 'bilibiliSearch' 目录下的子目录的子目录是否包含 bvid
         const subdirsSearch = getSubdirectoriesOfSubdirectories(bilibiliSearchDir);
-        if (subdirsSearch.includes(path.join(bilibiliSearchDir, bvid))) {
-          return path.join(bilibiliSearchDir, bvid); // 返回该文件夹地址
+
+
+        if (subdirsSearch.includes(bvid)) {
+          const parentFolder = findParentDirectoryOfFolder(bvid, bilibiliSearchDir);
+
+          if (parentFolder) {
+            // Only call hasJsonFile if parentFolder is not null
+            const subfolderCount = countSubfolders(parentFolder);
+            if(getJsonFromFolder(parentFolder)>subfolderCount){
+              return bvid; // returns true or false based on whether .json files exist
+            }else{
+              continue
+            }
+          }else{
+            continue; // Skip this iteration and move to the next one
+          }    
+        
         }
       
         // 检查 'bilibiliURL' 目录下的直接子目录是否包含 bvid
         const subdirsURL = getImmediateSubdirectories(bilibiliURLDir);
-        if (subdirsURL.includes(path.join(bilibiliURLDir, bvid))) {
-          return path.join(bilibiliURLDir, bvid); // 返回该文件夹地址
+
+        if (subdirsURL.includes(bvid)) {
+
+          continue; // Skip this iteration and move to the next one
         }
-      
         return bvid; // 如果不在其中，返回 null
 
 
       }
+
     }
 
     // 如果所有 JSON 文件都没有可用的 bvid
@@ -357,6 +374,56 @@ ipcMain.handle('read-list-json', async (event, folderPath) => {
     return { error: error }; // 返回错误信息
   }
 });
+
+
+function countSubfolders(folderPath: string) {
+  const files = fs.readdirSync(folderPath);
+  let folderCount = 0;
+
+  // Count the directories inside the folder
+  for (let file of files) {
+    const filePath = path.join(folderPath, file);
+    if (fs.statSync(filePath).isDirectory()) {
+      folderCount++;
+    }
+  }
+
+  return folderCount;
+}
+
+function hasJsonFile(folderPath: string) {
+  const files = fs.readdirSync(folderPath);
+  // Check if any file ends with .json extension
+  for (let file of files) {
+    if (file.endsWith('.json')) {
+      return true; // Return true if .json file is found
+    }
+  }
+  return false; // Return false if no .json file is found
+}
+
+function getJsonFromFolder(folderPath:string) {
+  if (hasJsonFile(folderPath)) {
+    const files = fs.readdirSync(folderPath);
+    // Find the first .json file in the folder
+    for (let file of files) {
+      if (file.endsWith('.json')) {
+        const filePath = path.join(folderPath, file);
+        const fileContent = fs.readFileSync(filePath, 'utf-8'); // Read file content
+        try {
+          const parsedJson = JSON.parse(fileContent); // Parse the JSON content
+          return parsedJson.pages; // Return the parsed JSON object
+        } catch (error) {
+          console.error('JSON parsing error:', error);
+          return null; // Return null if there is a JSON parsing error
+        }
+      }
+    }
+  } else {
+    console.log('No JSON file found in the directory');
+    return null; // Return null if no .json file is found
+  }
+}
 
 function getImmediateSubdirectories(folderPath: string): string[] {
   let allDirectories: string[] = [];
@@ -407,6 +474,33 @@ function getSubdirectoriesOfSubdirectories(folderPath: string): string[] {
 }
 
 // Main process handler for getting directories
+
+function findParentDirectoryOfFolder(folderName: string, startPath: string): string | null {
+  // 获取当前目录下的所有文件和目录
+  const files = fs.readdirSync(startPath);
+
+  // 遍历所有文件和目录
+  for (let file of files) {
+    const fullPath = path.join(startPath, file);
+    
+    // 如果是目录，检查它是否为目标文件夹
+    if (fs.statSync(fullPath).isDirectory()) {
+      // 如果当前目录下有子目录，继续检查子目录
+      const subDirs = fs.readdirSync(fullPath);
+
+      for (let subDir of subDirs) {
+        const subDirPath = path.join(fullPath, subDir);
+        if (fs.statSync(subDirPath).isDirectory() && subDir === folderName) {
+          // 如果找到了目标文件夹，返回当前父目录路径
+          return path.join(fullPath,folderName);
+        }
+      }
+    }
+  }
+
+  // 如果没有找到，返回 null
+  return null;
+}
 
 
 };

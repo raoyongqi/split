@@ -605,6 +605,9 @@ export async function getPlayUrlSearch(search: string,bvid: string, qn: number =
     await saveVideoDetailsPlay(search,bvid, videoDetails);
 
     if (videoDetails.pages.length === 1) {
+
+
+
       
       const cid = videoDetails.pages[0].cid;
       
@@ -615,19 +618,19 @@ export async function getPlayUrlSearch(search: string,bvid: string, qn: number =
       // 执行下载操作
       const downloadDir = path.join(os.homedir(), 'Music', 'bilibiliSearch',`${search}`,`${bvid}`, `${bvid}_${qnfnval}`); // 根据实际路径修改
 
-        if (fs.existsSync(downloadDir)) {
+      if (fs.existsSync(downloadDir)) {
 
-          console.log(`目录 ${downloadDir} 已存在，跳过下载步骤。`);
+        console.log(`目录 ${downloadDir} 已存在，跳过下载步骤。`);
 
-        } else {
-          // 如果目录不存在，执行下载步骤
+      } else {
+        // 如果目录不存在，执行下载步骤
 
-          console.log(`目录 ${downloadDir} 不存在，开始下载...`);
+        console.log(`目录 ${downloadDir} 不存在，开始下载...`);
 
-          await downloadPlayUrlSearch(result, search, bvid, cid, qnfnval);
-          await downloadM4sPlay(result, search, bvid, cid, qnfnval);
+        await downloadPlayUrlSearch(result, search, bvid, cid, qnfnval);
+        await downloadM4sPlay(result, search, bvid, cid, qnfnval);
 
-        }
+      }
       return result; // 返回单P视频的结果
 
     } else {
@@ -664,10 +667,6 @@ export async function getPlayUrlSearch(search: string,bvid: string, qn: number =
 
             }
 
-            
-
-
-
           multiPageResults.push(result); // 将每个页面的结果保存到数组中
 
         } catch (error) {
@@ -683,3 +682,6 @@ export async function getPlayUrlSearch(search: string,bvid: string, qn: number =
     throw error;
   }
 }
+
+
+
