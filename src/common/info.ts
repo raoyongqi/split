@@ -155,13 +155,6 @@ export async function getSearchVideo(keyword: string, page: number,  ): Promise<
 }
 
 
-// Fetch the play URL from Bilibili API using axios
-
-
-// 一个获取up主全部视频的 https://app.bilibili.com/x/v2/space/archive/cursor?vmid=[这里填写用户的uid（填写的时候记得把外面的方括号去掉）]
-
-
-
 
 // Fetch the JSON response for a given AID from Bilibili API
 export async function getCidByAid(aid: number) {
@@ -528,30 +521,6 @@ export async function getPlayUrlSearch(search: string,bvid: string, qn: number =
   const saveDir = path.join(os.homedir(), 'Music', 'bilibiliSearch', search, bvid);
 
 
-
-  // 考公视频包含多个p
-
-  //可能每次下载不完整，如果下载不完整尝试从上次下载的地方开始下载
-
-
-  if (fs.existsSync(saveDir)) {
-    // 如果目录存在，检查是否包含 JSON 文件
-    const files = fs.readdirSync(saveDir);
-    const jsonFiles = files.filter(file => path.extname(file).toLowerCase() === '.json');
-  
-    if (jsonFiles.length > 0) {
-      console.log(`目录 ${saveDir} 中包含以下 JSON 文件:`);
-      console.log(jsonFiles);
-
-
-      
-    } else {
-      console.log(`目录 ${saveDir} 不包含 JSON 文件.`);
-    }
-  
-    throw new Error(`目录 ${saveDir} 已存在，避免重复下载。`);
-  }
-
   // 检查文件夹是否存在，如果不存在则创建
   if (!fs.existsSync(saveDir)) {
     fs.mkdirSync(saveDir, { recursive: true });
@@ -593,94 +562,103 @@ export async function getPlayUrlSearch(search: string,bvid: string, qn: number =
       return response.data;
     } catch (error) {
       console.error(`Error fetching play URL for CID ${cid}:`, error);
+
       return null; // 如果请求失败，返回 null
+
     }
   };
 
-  try {
-    // 获取视频详情
-    const videoDetails = await getVideoDetails(bvid);
-    
+  const maxAttempts = 3;  // 最大重试次数
+
+  async function fetchVideoDetailsWithRetry(bvid: string, search: string) {
+    let attempts = 0;
+    let videoDetails = null;
+  
+    while (attempts < maxAttempts && videoDetails === null) {
+      try {
+        // 获取视频详情
+        videoDetails = await getVideoDetails(bvid);
+      } catch (error) {
+        console.error(`Error fetching video details (Attempt ${attempts + 1}):`, error);
+        attempts++;
+        if (attempts >= maxAttempts) {
+          throw new Error('Max retry attempts reached. Could not fetch video details.');
+        }
+      }
+    }
+  
     // 调用保存视频详情的函数
-    await saveVideoDetailsPlay(search,bvid, videoDetails);
-
+    await saveVideoDetailsPlay(search, bvid, videoDetails);
+  
     if (videoDetails.pages.length === 1) {
-
-
-
-      
       const cid = videoDetails.pages[0].cid;
-      
-
       const result = await getCidUrl(cid);
+  
       const qnfnval = `${qn}_${fnval}`;
-      
-      // 执行下载操作
-      const downloadDir = path.join(os.homedir(), 'Music', 'bilibiliSearch',`${search}`,`${bvid}`, `${bvid}_${qnfnval}`); // 根据实际路径修改
-
-      if (fs.existsSync(downloadDir)) {
-
-        console.log(`目录 ${downloadDir} 已存在，跳过下载步骤。`);
-
+      const baseSaveDir = path.join(os.homedir(), 'Music', 'bilibiliSearch', `${search}`, `${bvid}`, `${bvid}_${qnfnval}`);
+      const saveDir = path.join(baseSaveDir, `${cid}`);
+  
+      if (fs.existsSync(saveDir)) {
+        console.log(`目录 ${saveDir} 已存在，跳过下载步骤。`);
       } else {
-        // 如果目录不存在，执行下载步骤
-
-        console.log(`目录 ${downloadDir} 不存在，开始下载...`);
-
+        console.log(`目录 ${saveDir} 不存在，开始下载...`);
         await downloadPlayUrlSearch(result, search, bvid, cid, qnfnval);
         await downloadM4sPlay(result, search, bvid, cid, qnfnval);
-
       }
+  
       return result; // 返回单P视频的结果
-
     } else {
-      
-
       const multiPageResults = [];
-
+  
       // 遍历所有页面
       for (const item of videoDetails.pages) {
 
-        try {
-        
-        
-          const cid = item.cid;
-          const qnfnval = `${qn}_${fnval}`;
-
-          // 获取播放 URL
-          const result = await getCidUrl(cid);
-
-          // 执行下载操作
-          const downloadDir = path.join(os.homedir(), 'Music', 'bilibiliSearch',`${search}`,`${bvid}`, `${bvid}_${qnfnval}`); // 根据实际路径修改
-
-            if (fs.existsSync(downloadDir)) {
-
-              console.log(`目录 ${downloadDir} 已存在，跳过下载步骤。`);
-
+        let pageResult = null;
+        let pageAttempts = 0;
+  
+        while (pageAttempts < maxAttempts && pageResult === null) {
+          try {
+            const cid = item.cid;
+            const qnfnval = `${qn}_${fnval}`;
+  
+            // 获取播放 URL
+            pageResult = await getCidUrl(cid);
+  
+            const baseSaveDir = path.join(os.homedir(), 'Music', 'bilibiliSearch', `${search}`, `${bvid}`, `${bvid}_${qnfnval}`);
+            const saveDir = path.join(baseSaveDir, `${cid}`);
+  
+            if (fs.existsSync(saveDir)) {
+              console.log(`目录 ${saveDir} 已存在，跳过下载步骤。`);
             } else {
-              // 如果目录不存在，执行下载步骤
-
-              console.log(`目录 ${downloadDir} 不存在，开始下载...`);
-
-              await downloadPlayUrlSearch(result, search, bvid, cid, qnfnval);
-              await downloadM4sPlay(result, search, bvid, cid, qnfnval);
-
+              console.log(`目录 ${saveDir} 不存在，开始下载...`);
+              await downloadPlayUrlSearch(pageResult, search, bvid, cid, qnfnval);
+              await downloadM4sPlay(pageResult, search, bvid, cid, qnfnval);
             }
-
-          multiPageResults.push(result); // 将每个页面的结果保存到数组中
-
-        } catch (error) {
-          console.error(`Error processing CID ${item.cid}:`, error);
+  
+            multiPageResults.push(pageResult); // 将每个页面的结果保存到数组中
+          } catch (error) {
+            console.error(`Error processing CID ${item.cid} (Attempt ${pageAttempts + 1}):`, error);
+            pageAttempts++;
+            if (pageAttempts >= maxAttempts) {
+              console.error(`Max retry attempts reached for CID ${item.cid}. Skipping this page.`);
+            }
+          }
         }
       }
-
+  
       // 返回所有页面的结果
       return multiPageResults;
     }
-  } catch (error) {
-    console.error('Error fetching play URLs:', error);
-    throw error;
   }
+  
+  try {
+    const result = await fetchVideoDetailsWithRetry(bvid, search);
+    console.log('Successfully fetched video details and started download process.');
+    return result;
+  } catch (error) {
+    console.error('Error in the entire process:', error);
+  }
+  
 }
 
 

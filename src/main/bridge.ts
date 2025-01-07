@@ -280,7 +280,7 @@ ipcMain.handle('save-bv', async (event, bvid) => {
 });
 
 
-ipcMain.handle('read-list-json', async (event, folderPath) => {
+ipcMain.handle('read-list-json', async (event, folderPath,jumpbvid) => {
   try {
     // 确定目标文件夹路径
     const baseSaveDir = path.join(os.homedir(), 'Music', 'bilibiliSearch', folderPath);
@@ -325,9 +325,11 @@ ipcMain.handle('read-list-json', async (event, folderPath) => {
       // 查找第一个未被占用的 bvid
       for (let bvid of bvids) {
 
+        if(bvid === jumpbvid){
 
-        //明天需要调试的位置
-        
+          continue; // Skip this iteration and move to the next one
+
+        }
         const bilibiliSearchDir = 'C:\\Users\\r\\Music\\bilibiliSearch';
         const bilibiliURLDir = 'C:\\Users\\r\\Music\\bilibiliURL';
       
@@ -338,18 +340,19 @@ ipcMain.handle('read-list-json', async (event, folderPath) => {
         if (subdirsSearch.includes(bvid)) {
           const parentFolder = findParentDirectoryOfFolder(bvid, bilibiliSearchDir);
 
-          if (parentFolder) {
-            // Only call hasJsonFile if parentFolder is not null
-            const subfolderCount = countSubfolders(parentFolder);
-            if(getJsonFromFolder(parentFolder)>subfolderCount){
-              return bvid; // returns true or false based on whether .json files exist
-            }else{
-              continue
-            }
-          }else{
-            continue; // Skip this iteration and move to the next one
-          }    
+          if (!parentFolder) return bvid;
+          
+          
+          const subFolder = getFirstSubfolder(parentFolder)
+          if(!subFolder) return bvid;
+
+          // Only call hasJsonFile if parentFolder is not null
+          const subfolderCount = countSubfolders(path.join(parentFolder,subFolder));
+
         
+          if(getJsonFromFolder(parentFolder)>subfolderCount) return bvid; 
+            continue
+
         }
       
         // 检查 'bilibiliURL' 目录下的直接子目录是否包含 bvid
@@ -359,6 +362,10 @@ ipcMain.handle('read-list-json', async (event, folderPath) => {
 
           continue; // Skip this iteration and move to the next one
         }
+
+
+
+
         return bvid; // 如果不在其中，返回 null
 
 
@@ -374,6 +381,28 @@ ipcMain.handle('read-list-json', async (event, folderPath) => {
     return { error: error }; // 返回错误信息
   }
 });
+const getFirstSubfolder = (parentFolder: string) => {
+  try {
+    // 读取目录下所有的文件和子文件夹
+    const files = fs.readdirSync(parentFolder);
+
+    // 过滤出子文件夹
+    const subfolders = files.filter((file) => {
+      return fs.statSync(path.join(parentFolder, file)).isDirectory();
+    });
+
+    // 返回第一个子文件夹
+    if (subfolders.length > 0) {
+      return subfolders[0];
+    } else {
+      console.log('没有子文件夹');
+      return null;
+    }
+  } catch (error) {
+    console.error('读取目录失败:', error);
+    return null;
+  }
+};
 
 
 function countSubfolders(folderPath: string) {
@@ -412,7 +441,7 @@ function getJsonFromFolder(folderPath:string) {
         const fileContent = fs.readFileSync(filePath, 'utf-8'); // Read file content
         try {
           const parsedJson = JSON.parse(fileContent); // Parse the JSON content
-          return parsedJson.pages; // Return the parsed JSON object
+          return parsedJson.pages.length; // Return the parsed JSON object
         } catch (error) {
           console.error('JSON parsing error:', error);
           return null; // Return null if there is a JSON parsing error

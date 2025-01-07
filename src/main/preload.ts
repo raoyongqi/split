@@ -56,7 +56,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   saveBv: (bv: string) => ipcRenderer.invoke('save-bv', bv),
 
 
-  readListJson: (s: string) => ipcRenderer.invoke('read-list-json', s),
+  readListJson: (s: string,bvid: string) => ipcRenderer.invoke('read-list-json', s,bvid),
 
 
 }, 

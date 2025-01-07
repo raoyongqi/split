@@ -59,7 +59,7 @@ declare global {
       getBVDetails: (s: string) => Promise<any>;
 
 
-      readListJson: (s: string) => Promise<any>;
+      readListJson: (s: string,bvid: string) => Promise<any>;
 
 
     };

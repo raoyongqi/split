@@ -17,7 +17,6 @@ export async function mergeM4sToM4a(data: any, bvid: string, cid: number, qnfnva
 
   const baseSaveDir = path.join(os.homedir(), 'Music', 'bilibiliURL', `${bvid}`, `${bvid}_${qnfnval}`);
   const saveDir = path.join(baseSaveDir, `${cid}`);
-  // 确保目标文件夹存在
   if (!fs.existsSync(saveDir)) {
     return { error: '文件夹不存在', details: `指定的文件夹 ${saveDir} 不存在。` };
   }
@@ -43,8 +42,17 @@ export async function mergeM4sToM4a(data: any, bvid: string, cid: number, qnfnva
 
     // 拼接命令使用 concat 协议
     const concatFiles = m4sFiles.join('|');  // 使用管道符连接文件路径
-    const commandArgs = ['-i', `concat:${concatFiles}`, '-c:a', 'aac', '-strict', 'experimental', outputPath];
     
+    const commandArgs = [
+      '-i', `concat:${concatFiles}`,
+      '-c:v', 'nvenc_hevc',  // 使用 NVIDIA GPU 的 HEVC 编码器
+      '-c:a', 'aac',
+      '-strict', 'experimental',
+      '-fflags', '+genpts',
+      '-preset', 'fast',
+    ];
+    
+        
 
     // 使用 child_process spawn 执行 ffmpeg 命令
     const ffmpegProcess = spawn(ffmpegPath, commandArgs);
@@ -91,6 +99,9 @@ export async function mergeM4sToM4a(data: any, bvid: string, cid: number, qnfnva
     return { error: '合并失败', details: error };
   }
 }
+
+
+
 export async function mergeM4sPlay(data: any, search: string,bvid: string, cid: number, qnfnval: string) {
   const baseSaveDir = path.join(os.homedir(), 'Music', 'bilibiliSearch',`${search}`,`${bvid}`, `${bvid}_${qnfnval}`);
 

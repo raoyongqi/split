@@ -11,6 +11,9 @@ const SearchList: React.FC = () => {
   
   const dispatch = useDispatch<AppDispatch>();
 
+// 需要解决风控问题
+
+// 保存前需要校验数据的完整性
 
 // 暂停按钮出问题了
 
@@ -53,6 +56,7 @@ const SearchList: React.FC = () => {
 
   const handleSearch = async (keyword: string, page: number) => {
     try {
+      let bvid = null;
       let consecutiveNulls = 0; // 记录连续返回 null 的次数
       const maxConsecutiveNulls = 3; // 设置连续返回 null 的最大次数
   
@@ -68,21 +72,37 @@ const SearchList: React.FC = () => {
 
           return;
         }
-        const  bvid = await window.electronAPI.readListJson(keyword);
-
-
-        console.log(bvid);
-
+        bvid = await window.electronAPI.readListJson(keyword,bvid);
+        
         if (bvid === null) {
           // 如果 bvid 为空，调用 getSearchVideo
           await window.electronAPI.getSearchVideo(keyword, page);
           consecutiveNulls++; // 增加连续返回 null 的次数
           console.log(`第 ${consecutiveNulls} 次读取返回 null`);
+          
         } else {
           // 如果 bvid 有效，继续下一步，不退出
-          await window.electronAPI.getPlaySearch(keyword, bvid, 16, 16);
-          message.success(`视频搜索完成，第 ${page} 页`);
-          consecutiveNulls = 0; // 重置连续返回 null 的次数
+          try {
+            consecutiveNulls = 0; // 重置连续返回 null 的次数
+
+            const playSearchResult = await window.electronAPI.getPlaySearch(keyword, bvid, 16, 16);
+
+            if (playSearchResult == null) {
+              // 如果 getPlaySearch 返回 null，跳过本次循环
+              console.log(`getPlaySearch 返回 null，跳过本次操作`);
+              console.log(bvid)
+              continue;  // 跳过当前循环，继续下一次
+            }
+            consecutiveNulls = 0; // 重置连续返回 null 的次数
+            bvid = null;  // 如果 getPlaySearch 失败，清空 bvid
+            console.log(`getPlaySearch成功:`, error);
+
+          } catch (error) {
+            
+            console.error(`getPlaySearch 失败，不清空 bvid:`, error);
+
+            continue;
+          }
         }
       }
   
@@ -168,8 +188,6 @@ const SearchList: React.FC = () => {
   return (
 
     <Box>
-
-
       <Typography variant="h6">
         Search Length: {search.length}
       </Typography>
